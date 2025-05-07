@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { CalendarCheck, Clock, User, CheckCircle, Play, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
-import ptBR from 'date-fns/locale/pt-BR';
+import { ptBR } from 'date-fns/locale';
 
 interface TaskCardProps {
   task: Task;

@@ -36,6 +36,22 @@ const App = () => (
               } 
             />
             <Route 
+              path="/gerente/tarefas" 
+              element={
+                <ProtectedRoute roles={['gerente']}>
+                  <ManagerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/gerente/equipe" 
+              element={
+                <ProtectedRoute roles={['gerente']}>
+                  <ManagerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/gerente/delegar/:taskId" 
               element={
                 <ProtectedRoute roles={['gerente']}>
@@ -61,9 +77,25 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/supervisor/lojas" 
+              element={
+                <ProtectedRoute roles={['supervisor']}>
+                  <SupervisorDashboard />
+                </ProtectedRoute>
+              } 
+            />
             
             <Route 
               path="/admin" 
+              element={
+                <ProtectedRoute roles={['matriz_adm']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/cadastrar-tarefa" 
               element={
                 <ProtectedRoute roles={['matriz_adm']}>
                   <AdminDashboard />
