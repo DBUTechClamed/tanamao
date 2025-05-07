@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, CheckSquare, Users, LogOut, Building, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,37 +30,6 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
     }
   };
 
-  const getNavigationItems = () => {
-    if (!currentUser) return [];
-
-    switch (currentUser.role) {
-      case 'gerente':
-        return [
-          { label: 'Dashboard', icon: <LayoutDashboard className="mr-2 h-4 w-4" />, path: '/gerente' },
-          { label: 'Tarefas', icon: <CheckSquare className="mr-2 h-4 w-4" />, path: '/gerente/tarefas' },
-          { label: 'Equipe', icon: <Users className="mr-2 h-4 w-4" />, path: '/gerente/equipe' },
-        ];
-      case 'colaborador':
-        return [
-          { label: 'Minhas Tarefas', icon: <CheckSquare className="mr-2 h-4 w-4" />, path: '/colaborador' }
-        ];
-      case 'supervisor':
-        return [
-          { label: 'Dashboard', icon: <LayoutDashboard className="mr-2 h-4 w-4" />, path: '/supervisor' },
-          { label: 'Lojas', icon: <Building className="mr-2 h-4 w-4" />, path: '/supervisor/lojas' },
-        ];
-      case 'matriz_adm':
-        return [
-          { label: 'Dashboard', icon: <LayoutDashboard className="mr-2 h-4 w-4" />, path: '/admin' },
-          { label: 'Cadastro de Tarefas', icon: <CheckSquare className="mr-2 h-4 w-4" />, path: '/admin/tarefas/novo' },
-        ];
-      default:
-        return [];
-    }
-  };
-
-  const navigationItems = getNavigationItems();
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Cabeçalho */}
@@ -82,37 +51,13 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
         </div>
       </header>
 
-      {/* Navegação lateral e conteúdo principal */}
-      <div className="flex-1 flex">
-        <aside className="w-64 bg-white shadow-md p-4 hidden md:block">
-          <nav className="space-y-1">
-            {navigationItems.map((item, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => navigate(item.path)}
-              >
-                {item.icon}
-                {item.label}
-              </Button>
-            ))}
-            <div className="pt-4 mt-4 border-t">
-              <Button variant="ghost" className="w-full justify-start text-destructive" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sair
-              </Button>
-            </div>
-          </nav>
-        </aside>
-        
-        <main className="flex-1 p-6 bg-gray-50">
-          <div className="container mx-auto">
-            <h2 className="text-2xl font-bold mb-6">{title}</h2>
-            {children}
-          </div>
-        </main>
-      </div>
+      {/* Conteúdo principal */}
+      <main className="flex-1 p-6 bg-gray-50">
+        <div className="container mx-auto">
+          <h2 className="text-2xl font-bold mb-6">{title}</h2>
+          {children}
+        </div>
+      </main>
     </div>
   );
 };
