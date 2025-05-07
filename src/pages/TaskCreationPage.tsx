@@ -99,7 +99,7 @@ const TaskCreationPage: React.FC = () => {
       return;
     }
 
-    // Create new task
+    // Create new task or update existing
     if (editingTaskId) {
       // Update existing task
       setTasks(prevTasks => 

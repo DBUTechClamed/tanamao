@@ -165,7 +165,7 @@ const StoreListPage: React.FC = () => {
               <SelectItem value="todas">Todas as Performances</SelectItem>
               <SelectItem value="alta">Alta (≥80%)</SelectItem>
               <SelectItem value="media">Média (60-79%)</SelectItem>
-              <SelectItem value="baixa">Baixa (<60%)</SelectItem>
+              <SelectItem value="baixa">Baixa (&lt;60%)</SelectItem>
             </SelectContent>
           </Select>
         </div>
