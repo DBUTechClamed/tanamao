@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Cores personalizadas para o sistema
+				"task-urgent-important": "#EF4444",      // Vermelho - Urgente e Importante
+				"task-important": "#1E40AF",             // Azul - Importante, não Urgente
+				"task-urgent": "#FBBF24",                // Amarelo - Urgente, não Importante
+				"task-normal": "#6B7280",                // Cinza - Nem Urgente, nem Importante
+				"success": "#10B981",                    // Verde - Sucesso
+				"warning": "#F59E0B",                    // Laranja - Aviso
+				"info": "#3B82F6",                       // Azul claro - Informação
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +93,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-fingerprint': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-fingerprint': 'pulse-fingerprint 1.5s ease-in-out infinite'
 			}
 		}
 	},
