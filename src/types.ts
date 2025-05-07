@@ -1,4 +1,3 @@
-
 export type UserRole = 'gerente' | 'colaborador' | 'supervisor' | 'matriz_adm';
 
 export type UserProfile = {
@@ -48,23 +47,25 @@ export type Region = {
   name: string;
 };
 
-export type UserStats = {
+export interface UserStats {
   userId: string;
   userName: string;
+  userRole?: string;
   tasksAssigned: number;
   tasksStarted: number;
   tasksCompleted: number;
   tasksDelayed: number;
-  performance: number; // 0-100%
-};
+  performance: number;
+}
 
-export type StoreStats = {
+export interface StoreStats {
   storeId: string;
   storeName: string;
+  storeCity?: string;
   tasksTotal: number;
   tasksCompleted: number;
   tasksInProgress: number;
   tasksPending: number;
   tasksDelayed: number;
-  performance: number; // 0-100%
-};
+  performance: number;
+}
