@@ -7,58 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Circle, CheckCircle, Clock } from 'lucide-react';
-
-// Tarefas de exemplo para o colaborador
-const mockTasksData: Task[] = [
-  {
-    id: '5',
-    title: 'Inventário de Medicamentos Controlados',
-    description: 'Realizar contagem e conferência no sistema dos medicamentos controlados.',
-    priority: 'urgent_important',
-    frequency: 'semanal',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'pendente',
-    delegable: false,
-    extendable: false,
-    owner: '2', // Farmacêutico
-    delegates: [],
-    assignedTo: '2', // Atribuído ao farmacêutico
-  },
-  {
-    id: '6',
-    title: 'Recebimento de Mercadorias',
-    description: 'Conferir a nota fiscal e produtos recebidos, armazenar adequadamente.',
-    priority: 'important',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T12:00:00.000Z',
-    status: 'pendente',
-    delegable: false,
-    extendable: true,
-    owner: '4', // Estoquista
-    delegates: [],
-    assignedTo: '4', // Atribuído ao estoquista
-  },
-  {
-    id: '7',
-    title: 'Organização das Prateleiras',
-    description: 'Verificar e organizar as prateleiras de acordo com o planograma.',
-    priority: 'normal',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'pendente',
-    delegable: false,
-    extendable: false,
-    owner: '3', // Atendente
-    delegates: [],
-    assignedTo: '3', // Atribuído ao atendente
-  }
-];
+import { mockTasks } from '../data/mockData';
 
 const EmployeeDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -68,8 +17,9 @@ const EmployeeDashboard: React.FC = () => {
   // Filtra as tarefas que pertencem ao colaborador atual
   useEffect(() => {
     if (currentUser) {
-      const filteredTasks = mockTasksData.filter(
-        task => task.assignedTo === currentUser.id || task.owner === currentUser.id
+      const filteredTasks = mockTasks.filter(
+        task => (task.assignedTo === currentUser.id || task.owner === currentUser.id) && 
+                task.storeId === currentUser.storeId
       );
       setTasks(filteredTasks);
       
@@ -77,7 +27,7 @@ const EmployeeDashboard: React.FC = () => {
       if (filteredTasks.length > 0) {
         toast({
           title: `Olá, ${currentUser.name}!`,
-          description: `Você tem ${filteredTasks.length} tarefas pendentes hoje.`,
+          description: `Você tem ${filteredTasks.filter(t => t.status === 'pendente').length} tarefas pendentes hoje.`,
         });
       }
     }

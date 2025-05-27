@@ -1,3 +1,4 @@
+
 export type UserRole = 'gerente' | 'colaborador' | 'supervisor' | 'matriz_adm';
 
 export type UserProfile = {
@@ -19,6 +20,7 @@ export type Task = {
   id: string;
   title: string;
   description: string;
+  observations?: string; // Novo campo para observações/instruções
   priority: TaskPriority; // Classificação na Matriz de Eisenhower
   frequency: TaskFrequency;
   storeId: string;
@@ -39,6 +41,8 @@ export type Task = {
 export type Store = {
   id: string;
   name: string;
+  city: string;
+  state?: string; // Novo campo para estado
   regionId: string;
 };
 

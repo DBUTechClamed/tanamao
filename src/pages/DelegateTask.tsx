@@ -9,47 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Task, UserProfile } from '../types';
-import { format, addDays } from 'date-fns';
+import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar, User, Users } from 'lucide-react';
-
-// Tarefas de exemplo para o gerente
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Conferência de Estoque de Medicamentos',
-    description: 'Verificar o estoque de todos os medicamentos controlados e atualizar no sistema.',
-    priority: 'urgent_important',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: false,
-    owner: '1', // Gerente
-    delegates: ['2', '4'], // Farmacêutico, Estoquista
-  },
-  {
-    id: '2',
-    title: 'Revisão de Validades',
-    description: 'Verificar produtos próximos ao vencimento e organizar para promoção ou devolução.',
-    priority: 'important',
-    frequency: 'semanal',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-07T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: true,
-    owner: '1', // Gerente
-    delegates: ['3', '4'], // Atendente, Estoquista
-  },
-];
+import { mockTasks, mockUsers } from '../data/mockData';
 
 const DelegateTask: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
-  const { getUsersByRole, getUserById } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -72,10 +39,14 @@ const DelegateTask: React.FC = () => {
   }, [taskId]);
   
   // Obter colaboradores da loja
-  const storeEmployees = getUsersByRole('colaborador', task?.storeId);
+  const storeEmployees = mockUsers.filter(user => 
+    user.role === 'colaborador' && user.storeId === currentUser?.storeId
+  );
   
   // Obter delegados sugeridos
-  const suggestedDelegates = task?.delegates.map(id => getUserById(id)).filter(Boolean) as UserProfile[];
+  const suggestedDelegates = task?.delegates
+    .map(id => mockUsers.find(user => user.id === id))
+    .filter(Boolean) as UserProfile[];
   
   const handleDelegateTask = () => {
     if (!selectedUserId) {
@@ -87,10 +58,11 @@ const DelegateTask: React.FC = () => {
       return;
     }
     
-    // Aqui seria implementada a lógica para atualizar a tarefa no backend
+    const selectedUser = mockUsers.find(user => user.id === selectedUserId);
+    
     toast({
       title: "Tarefa delegada com sucesso",
-      description: `A tarefa foi delegada para ${getUserById(selectedUserId)?.name}.`,
+      description: `A tarefa foi delegada para ${selectedUser?.name}.`,
     });
     
     // Redirecionar para a dashboard do gerente
@@ -114,6 +86,13 @@ const DelegateTask: React.FC = () => {
           <div className="mb-4">
             <h3 className="text-lg font-medium">{task.title}</h3>
             <p className="text-sm text-gray-600">{task.description}</p>
+            
+            {task.observations && (
+              <div className="mt-3 p-3 bg-gray-50 rounded">
+                <h4 className="text-sm font-medium text-gray-700 mb-1">Observações/Instruções:</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line">{task.observations}</p>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

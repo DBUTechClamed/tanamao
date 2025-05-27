@@ -1,16 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, UserRole } from '../types';
-
-// Dados de usuários de exemplo
-const mockUsers: UserProfile[] = [
-  { id: '1', name: 'João Silva', role: 'gerente', storeId: '1' },
-  { id: '2', name: 'Maria Oliveira', role: 'colaborador', storeId: '1', position: 'farmacêutico' },
-  { id: '3', name: 'Pedro Santos', role: 'colaborador', storeId: '1', position: 'atendente' },
-  { id: '4', name: 'Ana Costa', role: 'colaborador', storeId: '1', position: 'estoquista' },
-  { id: '5', name: 'Carlos Souza', role: 'supervisor', regionId: '1' },
-  { id: '6', name: 'Fernanda Lima', role: 'matriz_adm' },
-];
+import { mockUsers } from '../data/mockData';
 
 interface AuthContextProps {
   currentUser: UserProfile | null;

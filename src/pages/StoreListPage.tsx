@@ -1,103 +1,81 @@
 
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { StoreStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { StoreStats } from '../types';
 import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
-// Dados de exemplo para as lojas
-const mockStores: StoreStats[] = [
-  { 
-    storeId: '1', 
-    storeName: 'Farmácia Centro', 
-    storeCity: 'São Paulo',
-    tasksTotal: 45, 
-    tasksCompleted: 32, 
-    tasksInProgress: 8, 
-    tasksPending: 3, 
-    tasksDelayed: 2, 
-    performance: 71 
+// Mock data para lojas supervisionadas
+const mockStoreStats: StoreStats[] = [
+  {
+    storeId: '001',
+    storeName: 'Filial 001 - Centro',
+    storeCity: 'Curitiba',
+    tasksTotal: 15,
+    tasksCompleted: 12,
+    tasksInProgress: 2,
+    tasksPending: 1,
+    tasksDelayed: 0,
+    performance: 85
   },
-  { 
-    storeId: '2', 
-    storeName: 'Farmácia Shopping', 
-    storeCity: 'São Paulo',
-    tasksTotal: 38, 
-    tasksCompleted: 30, 
-    tasksInProgress: 5, 
-    tasksPending: 2, 
-    tasksDelayed: 1, 
-    performance: 79 
+  {
+    storeId: '002', 
+    storeName: 'Filial 002 - Batel',
+    storeCity: 'Curitiba',
+    tasksTotal: 12,
+    tasksCompleted: 10,
+    tasksInProgress: 1,
+    tasksPending: 1,
+    tasksDelayed: 0,
+    performance: 92
   },
-  { 
-    storeId: '3', 
-    storeName: 'Farmácia Norte', 
-    storeCity: 'Campinas',
-    tasksTotal: 42, 
-    tasksCompleted: 25, 
-    tasksInProgress: 10, 
-    tasksPending: 4, 
-    tasksDelayed: 3, 
-    performance: 60 
+  {
+    storeId: '003',
+    storeName: 'Filial 003 - Água Verde',
+    storeCity: 'Curitiba',
+    tasksTotal: 18,
+    tasksCompleted: 14,
+    tasksInProgress: 2,
+    tasksPending: 1,
+    tasksDelayed: 1,
+    performance: 78
   },
-  { 
-    storeId: '4', 
-    storeName: 'Farmácia Sul', 
-    storeCity: 'Campinas',
-    tasksTotal: 36, 
-    tasksCompleted: 32, 
-    tasksInProgress: 2, 
-    tasksPending: 2, 
-    tasksDelayed: 0, 
-    performance: 89 
+  {
+    storeId: '004',
+    storeName: 'Filial 004 - Centro',
+    storeCity: 'Londrina',
+    tasksTotal: 20,
+    tasksCompleted: 16,
+    tasksInProgress: 3,
+    tasksPending: 0,
+    tasksDelayed: 1,
+    performance: 82
   },
-  { 
-    storeId: '5', 
-    storeName: 'Farmácia Oeste', 
-    storeCity: 'Ribeirão Preto',
-    tasksTotal: 40, 
-    tasksCompleted: 35, 
-    tasksInProgress: 3, 
-    tasksPending: 1, 
-    tasksDelayed: 1, 
-    performance: 88 
+  {
+    storeId: '005',
+    storeName: 'Filial 005 - Zona Norte',
+    storeCity: 'Londrina',
+    tasksTotal: 14,
+    tasksCompleted: 11,
+    tasksInProgress: 2,
+    tasksPending: 1,
+    tasksDelayed: 0,
+    performance: 88
   },
-  { 
-    storeId: '6', 
-    storeName: 'Farmácia Leste', 
-    storeCity: 'Santos',
-    tasksTotal: 38, 
-    tasksCompleted: 20, 
-    tasksInProgress: 10, 
-    tasksPending: 6, 
-    tasksDelayed: 2, 
-    performance: 53 
-  },
-  { 
-    storeId: '7', 
-    storeName: 'Farmácia Central', 
-    storeCity: 'Santos',
-    tasksTotal: 44, 
-    tasksCompleted: 38, 
-    tasksInProgress: 4, 
-    tasksPending: 2, 
-    tasksDelayed: 0, 
-    performance: 86 
-  },
-  { 
-    storeId: '8', 
-    storeName: 'Farmácia Plaza', 
-    storeCity: 'São José dos Campos',
-    tasksTotal: 39, 
-    tasksCompleted: 28, 
-    tasksInProgress: 7, 
-    tasksPending: 3, 
-    tasksDelayed: 1, 
-    performance: 72 
+  {
+    storeId: '006',
+    storeName: 'Filial 006 - Shopping',
+    storeCity: 'Maringá',
+    tasksTotal: 16,
+    tasksCompleted: 12,
+    tasksInProgress: 2,
+    tasksPending: 1,
+    tasksDelayed: 1,
+    performance: 75
   }
 ];
 
@@ -108,12 +86,12 @@ const StoreListPage: React.FC = () => {
   const [performanceFilter, setPerformanceFilter] = useState<string>('todas');
 
   // Extract unique cities for filter
-  const cities = Array.from(new Set(mockStores.map(store => store.storeCity)));
+  const cities = Array.from(new Set(mockStoreStats.map(store => store.storeCity)));
 
   // Filter stores based on search term and filters
-  const filteredStores = mockStores.filter(store => {
+  const filteredStores = mockStoreStats.filter(store => {
     const matchesSearch = store.storeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         store.storeCity.toLowerCase().includes(searchTerm.toLowerCase());
+                         (store.storeCity && store.storeCity.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCity = cityFilter === 'todas' || store.storeCity === cityFilter;
     
@@ -125,13 +103,17 @@ const StoreListPage: React.FC = () => {
     return matchesSearch && matchesCity && matchesPerformance;
   });
 
+  const handleViewDetails = (storeId: string) => {
+    navigate(`/supervisor/loja/${storeId}`);
+  };
+
   return (
-    <Layout title="Lojas">
+    <Layout title="Lojas Supervisionadas">
       <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Buscar lojas..."
+            placeholder="Buscar loja..."
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -149,7 +131,7 @@ const StoreListPage: React.FC = () => {
             <SelectContent>
               <SelectItem value="todas">Todas as Cidades</SelectItem>
               {cities.map(city => (
-                <SelectItem key={city} value={city}>{city}</SelectItem>
+                <SelectItem key={city} value={city || ''}>{city}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -182,9 +164,8 @@ const StoreListPage: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loja</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total de Tarefas</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Tarefas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Em Progresso</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atrasadas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
@@ -197,7 +178,6 @@ const StoreListPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{store.storeCity}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{store.tasksTotal}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{store.tasksCompleted}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{store.tasksInProgress}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{store.tasksDelayed}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex items-center">
@@ -211,10 +191,10 @@ const StoreListPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => navigate(`/supervisor/loja/${store.storeId}`)}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewDetails(store.storeId)}
                       >
                         Ver Detalhes
                       </Button>

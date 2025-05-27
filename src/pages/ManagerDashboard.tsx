@@ -7,91 +7,39 @@ import { Task, UserStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Tarefas de exemplo para o gerente
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Conferência de Estoque de Medicamentos',
-    description: 'Verificar o estoque de todos os medicamentos controlados e atualizar no sistema.',
-    priority: 'urgent_important',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: false,
-    owner: '1', // Gerente
-    delegates: ['2', '4'], // Farmacêutico, Estoquista
-  },
-  {
-    id: '2',
-    title: 'Revisão de Validades',
-    description: 'Verificar produtos próximos ao vencimento e organizar para promoção ou devolução.',
-    priority: 'important',
-    frequency: 'semanal',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-07T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: true,
-    owner: '1', // Gerente
-    delegates: ['3', '4'], // Atendente, Estoquista
-  },
-  {
-    id: '3',
-    title: 'Limpeza da Área de Atendimento',
-    description: 'Realizar limpeza completa da área de atendimento ao cliente.',
-    priority: 'normal',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'em_progresso',
-    delegable: true,
-    extendable: false,
-    owner: '3', // Atendente
-    delegates: [],
-    assignedTo: '3',
-    startedBy: '3',
-    startedAt: '2023-05-01T09:30:00.000Z',
-  },
-  {
-    id: '4',
-    title: 'Relatório de Vendas Semanal',
-    description: 'Preparar o relatório de vendas da semana anterior e enviar para matriz.',
-    priority: 'urgent',
-    frequency: 'semanal',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-02T12:00:00.000Z',
-    status: 'pendente',
-    delegable: false,
-    extendable: true,
-    owner: '1', // Gerente
-    delegates: [],
-  }
-];
-
-// Estatísticas de exemplo para o dashboard do gerente
-const mockStats = {
-  pendingTasks: 3,
-  inProgressTasks: 1,
-  completedTasks: 8,
-  lateTasks: 0,
-  userStats: [
-    { userId: '2', userName: 'Maria Oliveira', tasksAssigned: 5, tasksStarted: 5, tasksCompleted: 4, tasksDelayed: 1, performance: 80 },
-    { userId: '3', userName: 'Pedro Santos', tasksAssigned: 3, tasksStarted: 3, tasksCompleted: 3, tasksDelayed: 0, performance: 100 },
-    { userId: '4', userName: 'Ana Costa', tasksAssigned: 4, tasksStarted: 4, tasksCompleted: 3, tasksDelayed: 1, performance: 75 }
-  ] as UserStats[]
-};
+import { mockTasks, mockUsers } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 
 const ManagerDashboard: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Filter tasks for current store
+  const storeTasks = mockTasks.filter(task => task.storeId === currentUser?.storeId);
+  const [tasks, setTasks] = useState<Task[]>(storeTasks);
+  
+  // Get team stats for current store
+  const storeEmployees = mockUsers.filter(user => 
+    user.role === 'colaborador' && user.storeId === currentUser?.storeId
+  );
+  
+  const mockStats = {
+    pendingTasks: tasks.filter(t => t.status === 'pendente').length,
+    inProgressTasks: tasks.filter(t => t.status === 'em_progresso').length,
+    completedTasks: tasks.filter(t => t.status === 'concluida').length,
+    lateTasks: tasks.filter(t => t.status === 'atrasada').length,
+    userStats: storeEmployees.map(employee => ({
+      userId: employee.id,
+      userName: employee.name,
+      userRole: employee.position,
+      tasksAssigned: Math.floor(Math.random() * 10) + 3,
+      tasksStarted: Math.floor(Math.random() * 8) + 2,
+      tasksCompleted: Math.floor(Math.random() * 7) + 1,
+      tasksDelayed: Math.floor(Math.random() * 3),
+      performance: Math.floor(Math.random() * 40) + 60
+    })) as UserStats[]
+  };
   
   const handleStartTask = (taskId: string) => {
     setTasks(currentTasks => 
@@ -100,7 +48,7 @@ const ManagerDashboard: React.FC = () => {
           ? { 
               ...task, 
               status: 'em_progresso', 
-              startedBy: '1', // ID do gerente 
+              startedBy: currentUser?.id || '1',
               startedAt: new Date().toISOString() 
             } 
           : task
@@ -122,7 +70,7 @@ const ManagerDashboard: React.FC = () => {
               ? { 
                   ...task, 
                   status: 'concluida', 
-                  completedBy: '1', // ID do gerente 
+                  completedBy: currentUser?.id || '1',
                   completedAt: new Date().toISOString() 
                 } 
               : task
@@ -201,6 +149,7 @@ const ManagerDashboard: React.FC = () => {
               <thead>
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colaborador</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atribuídas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Iniciadas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
@@ -212,6 +161,7 @@ const ManagerDashboard: React.FC = () => {
                 {mockStats.userStats.map((stat) => (
                   <tr key={stat.userId}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{stat.userName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.userRole}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksAssigned}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksStarted}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksCompleted}</td>

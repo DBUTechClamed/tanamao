@@ -14,64 +14,21 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Trash2, Edit, Plus } from 'lucide-react';
+import { Search, Trash2, Edit } from 'lucide-react';
 import { Task, TaskFrequency, TaskPriority } from '../types';
 import { useToast } from '@/hooks/use-toast';
-
-// Stores mock data
-const stores = [
-  { id: '1', name: 'Farmácia Centro', city: 'São Paulo' },
-  { id: '2', name: 'Farmácia Shopping', city: 'São Paulo' },
-  { id: '3', name: 'Farmácia Norte', city: 'Campinas' },
-  { id: '4', name: 'Farmácia Sul', city: 'Campinas' },
-  { id: '5', name: 'Farmácia Oeste', city: 'Ribeirão Preto' },
-  { id: '6', name: 'Farmácia Leste', city: 'Santos' },
-  { id: '7', name: 'Farmácia Central', city: 'Santos' },
-  { id: '8', name: 'Farmácia Plaza', city: 'São José dos Campos' },
-];
-
-// Mock tasks
-const initialTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Conferência de Estoque de Medicamentos',
-    description: 'Verificar o estoque de todos os medicamentos controlados e atualizar no sistema.',
-    priority: 'urgent_important',
-    frequency: 'diaria',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-01T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: false,
-    owner: '1',
-    delegates: ['2', '4'],
-  },
-  {
-    id: '2',
-    title: 'Revisão de Validades',
-    description: 'Verificar produtos próximos ao vencimento e organizar para promoção ou devolução.',
-    priority: 'important',
-    frequency: 'semanal',
-    storeId: '1',
-    createdAt: '2023-05-01T08:00:00.000Z',
-    dueDate: '2023-05-07T17:00:00.000Z',
-    status: 'pendente',
-    delegable: true,
-    extendable: true,
-    owner: '1',
-    delegates: ['3', '4'],
-  }
-];
+import { mockStores, mockTasks as initialTasks } from '../data/mockData';
 
 const TaskCreationPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [searchTerm, setSearchTerm] = useState('');
+  const [storeSearchTerm, setStoreSearchTerm] = useState('');
   const { toast } = useToast();
   
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [observations, setObservations] = useState('');
   const [selectedStores, setSelectedStores] = useState<string[]>([]);
   const [dueDate, setDueDate] = useState('');
   const [frequency, setFrequency] = useState<TaskFrequency>('diaria');
@@ -84,6 +41,13 @@ const TaskCreationPage: React.FC = () => {
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     task.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filter stores based on search term
+  const filteredStores = mockStores.filter(store =>
+    store.name.toLowerCase().includes(storeSearchTerm.toLowerCase()) ||
+    store.city.toLowerCase().includes(storeSearchTerm.toLowerCase()) ||
+    (store.state && store.state.toLowerCase().includes(storeSearchTerm.toLowerCase()))
   );
 
   // Handle form submission
@@ -109,13 +73,13 @@ const TaskCreationPage: React.FC = () => {
                 ...task,
                 title,
                 description,
+                observations,
                 storeId: selectedStores[0], // Just using the first store for this example
                 dueDate: new Date(dueDate).toISOString(),
                 frequency,
                 priority,
                 delegable,
                 extendable,
-                updatedAt: new Date().toISOString()
               }
             : task
         )
@@ -131,6 +95,7 @@ const TaskCreationPage: React.FC = () => {
         id: `new-${Date.now()}-${index}`,
         title,
         description,
+        observations,
         priority,
         frequency,
         storeId,
@@ -159,6 +124,7 @@ const TaskCreationPage: React.FC = () => {
   const resetForm = () => {
     setTitle('');
     setDescription('');
+    setObservations('');
     setSelectedStores([]);
     setDueDate('');
     setFrequency('diaria');
@@ -175,6 +141,7 @@ const TaskCreationPage: React.FC = () => {
     if (taskToEdit) {
       setTitle(taskToEdit.title);
       setDescription(taskToEdit.description);
+      setObservations(taskToEdit.observations || '');
       setSelectedStores([taskToEdit.storeId]);
       
       // Convert ISO date to yyyy-MM-dd
@@ -228,7 +195,7 @@ const TaskCreationPage: React.FC = () => {
 
   // Get store name by id
   const getStoreName = (storeId: string) => {
-    const store = stores.find(store => store.id === storeId);
+    const store = mockStores.find(store => store.id === storeId);
     return store ? store.name : 'Loja não encontrada';
   };
 
@@ -267,13 +234,35 @@ const TaskCreationPage: React.FC = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label htmlFor="observations" className="block text-sm font-medium text-gray-700">
+                  Observações/Instruções
+                </label>
+                <Textarea
+                  id="observations"
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  placeholder="Instruções detalhadas, frequência, responsáveis, etc."
+                  rows={4}
+                />
+              </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Selecione as Lojas *
                 </label>
-                <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-2">
-                  {stores.map((store) => (
+                <div className="relative mb-2">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Buscar lojas..."
+                    className="pl-9"
+                    value={storeSearchTerm}
+                    onChange={(e) => setStoreSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
+                  {filteredStores.slice(0, 50).map((store) => (
                     <div key={store.id} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`store-${store.id}`}
@@ -284,18 +273,28 @@ const TaskCreationPage: React.FC = () => {
                         htmlFor={`store-${store.id}`}
                         className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {store.name} ({store.city})
+                        {store.name} ({store.city}/{store.state})
                       </label>
                     </div>
                   ))}
+                  {filteredStores.length > 50 && (
+                    <p className="text-sm text-gray-500 text-center py-2">
+                      Mostrando 50 de {filteredStores.length} lojas. Use a busca para refinar.
+                    </p>
+                  )}
                 </div>
                 {selectedStores.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
-                    {selectedStores.map(storeId => (
+                    {selectedStores.slice(0, 10).map(storeId => (
                       <Badge key={storeId} variant="outline" className="bg-primary/10">
                         {getStoreName(storeId)}
                       </Badge>
                     ))}
+                    {selectedStores.length > 10 && (
+                      <Badge variant="outline" className="bg-gray-100">
+                        +{selectedStores.length - 10} lojas
+                      </Badge>
+                    )}
                   </div>
                 )}
               </div>
@@ -420,7 +419,7 @@ const TaskCreationPage: React.FC = () => {
                       <div className="flex space-x-1">
                         <Button 
                           variant="ghost" 
-                          size="icon" 
+                          size="sm" 
                           className="h-8 w-8 text-blue-500"
                           onClick={() => handleEditTask(task.id)}
                         >
@@ -429,7 +428,7 @@ const TaskCreationPage: React.FC = () => {
                         </Button>
                         <Button 
                           variant="ghost" 
-                          size="icon" 
+                          size="sm" 
                           className="h-8 w-8 text-red-500"
                           onClick={() => handleDeleteTask(task.id)}
                         >
@@ -440,6 +439,12 @@ const TaskCreationPage: React.FC = () => {
                     </div>
                     
                     <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+                    
+                    {task.observations && (
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <strong>Observações:</strong> {task.observations}
+                      </div>
+                    )}
                     
                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                       <Badge variant="outline" className="bg-primary/10">
