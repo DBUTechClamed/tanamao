@@ -40,7 +40,7 @@ const TeamPage: React.FC = () => {
 
   return (
     <Layout title="Equipe">
-      <div className="space-y-6">
+      <div className="space-y-6" style={{ backgroundColor: '#F5F5F5', minHeight: '100vh', padding: '24px' }}>
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold flex items-center">
             <Users className="mr-2 h-6 w-6" />
@@ -95,7 +95,7 @@ const TeamPage: React.FC = () => {
         </div>
 
         {/* Lista detalhada dos colaboradores */}
-        <Card>
+        <Card style={{ backgroundColor: 'white' }}>
           <CardHeader>
             <CardTitle>Desempenho Individual</CardTitle>
           </CardHeader>
@@ -127,7 +127,13 @@ const TeamPage: React.FC = () => {
                             {stats.hasPendingTasks && (
                               <Button 
                                 onClick={() => handleImprimirComanda(employee.id)}
-                                className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-medium px-4 py-2 rounded-md"
+                                style={{ 
+                                  backgroundColor: '#118f55', 
+                                  color: '#ffffff',
+                                  borderRadius: '6px',
+                                  fontWeight: '500'
+                                }}
+                                className="font-medium px-4 py-2 rounded-md"
                               >
                                 <FileText className="mr-2 h-4 w-4" />
                                 Imprimir Comanda
