@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
+import PaginaComanda from '../components/PaginaComanda';
 import { Task, UserStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, AlertCircle, Clock, TrendingUp, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockTasks, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +20,7 @@ const ManagerDashboard: React.FC = () => {
   // Filter tasks for current store
   const storeTasks = mockTasks.filter(task => task.storeId === currentUser?.storeId);
   const [tasks, setTasks] = useState<Task[]>(storeTasks);
+  const [comandaColaborador, setComandaColaborador] = useState<string | null>(null);
   
   // Get team stats for current store
   const storeEmployees = mockUsers.filter(user => 
@@ -29,16 +32,22 @@ const ManagerDashboard: React.FC = () => {
     inProgressTasks: tasks.filter(t => t.status === 'em_progresso').length,
     completedTasks: tasks.filter(t => t.status === 'concluida').length,
     lateTasks: tasks.filter(t => t.status === 'atrasada').length,
-    userStats: storeEmployees.map(employee => ({
-      userId: employee.id,
-      userName: employee.name,
-      userRole: employee.position,
-      tasksAssigned: Math.floor(Math.random() * 10) + 3,
-      tasksStarted: Math.floor(Math.random() * 8) + 2,
-      tasksCompleted: Math.floor(Math.random() * 7) + 1,
-      tasksDelayed: Math.floor(Math.random() * 3),
-      performance: Math.floor(Math.random() * 40) + 60
-    })) as UserStats[]
+    userStats: storeEmployees.map(employee => {
+      const employeeTasks = tasks.filter(t => t.assignedTo === employee.id);
+      const pendingTasks = employeeTasks.filter(t => t.status === 'pendente' || t.status === 'em_progresso');
+      
+      return {
+        userId: employee.id,
+        userName: employee.name,
+        userRole: employee.position,
+        tasksAssigned: employeeTasks.length,
+        tasksStarted: employeeTasks.filter(t => t.status === 'em_progresso').length,
+        tasksCompleted: employeeTasks.filter(t => t.status === 'concluida').length,
+        tasksDelayed: employeeTasks.filter(t => t.status === 'atrasada').length,
+        performance: employeeTasks.length > 0 ? Math.round((employeeTasks.filter(t => t.status === 'concluida').length / employeeTasks.length) * 100) : 0,
+        hasPendingTasks: pendingTasks.length > 0
+      };
+    }) as (UserStats & { hasPendingTasks: boolean })[]
   };
   
   const handleStartTask = (taskId: string) => {
@@ -100,6 +109,16 @@ const ManagerDashboard: React.FC = () => {
     navigate(`/gerente/delegar/${taskId}`);
   };
 
+  const handleImprimirComanda = (colaboradorId: string) => {
+    setComandaColaborador(colaboradorId);
+  };
+
+  const handleCloseComanda = () => {
+    setComandaColaborador(null);
+  };
+
+  const colaboradorSelecionado = colaboradorSelecionado ? mockUsers.find(user => user.id === comandaColaborador) : null;
+
   return (
     <Layout title="Dashboard">
       <div className="grid gap-4 md:grid-cols-4">
@@ -155,6 +174,7 @@ const ManagerDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atrasos</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -177,6 +197,20 @@ const ManagerDashboard: React.FC = () => {
                         <span className="ml-2">{stat.performance}%</span>
                       </div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {stat.hasPendingTasks ? (
+                        <Button
+                          onClick={() => handleImprimirComanda(stat.userId)}
+                          className="bg-[#118f55] hover:bg-[#0f7a47] text-white text-sm font-bold px-3 py-1 rounded-lg"
+                          size="sm"
+                        >
+                          <Printer className="w-4 h-4 mr-1" />
+                          Imprimir Comanda
+                        </Button>
+                      ) : (
+                        <span className="text-gray-400 text-sm">Sem tarefas pendentes</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -194,6 +228,16 @@ const ManagerDashboard: React.FC = () => {
           onDelegate={handleDelegateTask}
         />
       </div>
+
+      {/* Modal da Comanda */}
+      {comandaColaborador && colaboradorSelecionado && currentUser && (
+        <PaginaComanda
+          colaborador={colaboradorSelecionado}
+          gerente={currentUser}
+          tasks={tasks}
+          onClose={handleCloseComanda}
+        />
+      )}
     </Layout>
   );
 };
