@@ -12,7 +12,7 @@ export type UserProfile = {
 
 export type TaskPriority = 'urgent_important' | 'important' | 'urgent' | 'normal';
 
-export type TaskFrequency = 'diaria' | 'semanal' | 'mensal' | 'bimestral' | 'trimestral' | 'semestral' | 'anual' | 'pontual';
+export type TaskFrequency = 'diaria' | 'semanal' | 'mensal' | 'bimestral' | 'trimestral' | 'semestral' | 'anual' | 'pontual' | 'quinzenal';
 
 export type TaskStatus = 'pendente' | 'em_progresso' | 'concluida' | 'atrasada';
 

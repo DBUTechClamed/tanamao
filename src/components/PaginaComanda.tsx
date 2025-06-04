@@ -48,6 +48,7 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
       case 'semestral': return 'Semestral';
       case 'anual': return 'Anual';
       case 'pontual': return 'Pontual';
+      case 'quinzenal': return 'Quinzenal';
       default: return frequency;
     }
   };
@@ -135,7 +136,7 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @media print {
           body, html { 
             margin: 0; 

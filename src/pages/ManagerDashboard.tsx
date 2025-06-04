@@ -117,7 +117,7 @@ const ManagerDashboard: React.FC = () => {
     setComandaColaborador(null);
   };
 
-  const colaboradorSelecionado = colaboradorSelecionado ? mockUsers.find(user => user.id === comandaColaborador) : null;
+  const colaboradorSelecionado = comandaColaborador ? mockUsers.find(user => user.id === comandaColaborador) : null;
 
   return (
     <Layout title="Dashboard">
