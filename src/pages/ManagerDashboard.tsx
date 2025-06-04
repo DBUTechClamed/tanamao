@@ -5,8 +5,7 @@ import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
 import { Task, UserStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertCircle, Clock, TrendingUp, FileText } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockTasks, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
@@ -107,23 +106,12 @@ const ManagerDashboard: React.FC = () => {
     navigate(`/gerente/delegar/${taskId}`);
   };
 
-  const handleImprimirComanda = () => {
-    navigate('/gerente/comanda');
-  };
-
   return (
     <Layout title="Dashboard">
       <div className="space-y-6">
-        {/* Botão Imprimir Comanda */}
+        {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <Button 
-            onClick={handleImprimirComanda}
-            className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            Imprimir Comanda
-          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">

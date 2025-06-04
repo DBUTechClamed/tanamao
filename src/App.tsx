@@ -14,13 +14,16 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import TaskPage from "./pages/TaskPage";
 import TeamPage from "./pages/TeamPage";
 import ComandaPage from "./pages/ComandaPage";
+import EmployeeComandaPage from "./pages/EmployeeComandaPage";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import SupervisorDashboard from "./pages/SupervisorDashboard";
 import StoreListPage from "./pages/StoreListPage";
 import StoreDetailPage from "./pages/StoreDetailPage";
 import SupervisorStoreDetailPage from "./pages/SupervisorStoreDetailPage";
+import AssignTaskToStore from "./pages/AssignTaskToStore";
 import AdminDashboard from "./pages/AdminDashboard";
 import TaskCreationPage from "./pages/TaskCreationPage";
+import CreateTaskPage from "./pages/CreateTaskPage";
 import DelegateTask from "./pages/DelegateTask";
 import NotFound from "./pages/NotFound";
 
@@ -68,6 +71,14 @@ const App = () => (
                   element={
                     <ProtectedRoute roles={['gerente']}>
                       <TeamPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/gerente/equipe/:colaboradorId/comanda" 
+                  element={
+                    <ProtectedRoute roles={['gerente']}>
+                      <EmployeeComandaPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -145,6 +156,14 @@ const App = () => (
                     </ProtectedRoute>
                   } 
                 />
+                <Route 
+                  path="/supervisor/lojas/:lojaId/atribuir-tarefa" 
+                  element={
+                    <ProtectedRoute roles={['supervisor']}>
+                      <AssignTaskToStore />
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 <Route 
                   path="/admin" 
@@ -166,7 +185,15 @@ const App = () => (
                   path="/admin/cadastrar-tarefa" 
                   element={
                     <ProtectedRoute roles={['matriz_adm']}>
-                      <TaskCreationPage />
+                      <CreateTaskPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/adm/cadastrar-tarefa" 
+                  element={
+                    <ProtectedRoute roles={['matriz_adm']}>
+                      <CreateTaskPage />
                     </ProtectedRoute>
                   } 
                 />

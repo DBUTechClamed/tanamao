@@ -1,14 +1,17 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Users, CheckCircle, Clock, AlertCircle, FileText } from 'lucide-react';
 import { mockUsers, mockTasks } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 
 const TeamPage: React.FC = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   
   // Filtrar colaboradores da loja atual
   const storeEmployees = mockUsers.filter(user => 
@@ -26,8 +29,13 @@ const TeamPage: React.FC = () => {
       inProgress: employeeTasks.filter(t => t.status === 'em_progresso').length,
       pending: employeeTasks.filter(t => t.status === 'pendente').length,
       delayed: employeeTasks.filter(t => t.status === 'atrasada').length,
-      performance: employeeTasks.length > 0 ? Math.round((employeeTasks.filter(t => t.status === 'concluida').length / employeeTasks.length) * 100) : 0
+      performance: employeeTasks.length > 0 ? Math.round((employeeTasks.filter(t => t.status === 'concluida').length / employeeTasks.length) * 100) : 0,
+      hasPendingTasks: employeeTasks.filter(t => t.status === 'pendente' || t.status === 'em_progresso').length > 0
     };
+  };
+
+  const handleImprimirComanda = (employeeId: string) => {
+    navigate(`/gerente/equipe/${employeeId}/comanda`);
   };
 
   return (
@@ -96,20 +104,35 @@ const TeamPage: React.FC = () => {
               {storeEmployees.map((employee) => {
                 const stats = getEmployeeStats(employee.id);
                 return (
-                  <div key={employee.id} className="p-4 border rounded-lg">
+                  <div key={employee.id} className="p-4 border rounded-lg bg-white">
                     <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-lg">{employee.name}</h3>
-                        <p className="text-gray-600">{employee.position || 'Colaborador'}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-2xl font-bold">{stats.performance}%</span>
-                          <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className={`h-2 rounded-full ${stats.performance >= 80 ? 'bg-green-500' : stats.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                              style={{ width: `${stats.performance}%` }}
-                            ></div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-semibold text-lg">{employee.name}</h3>
+                            <p className="text-gray-600">{employee.position || 'Colaborador'}</p>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-right">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-2xl font-bold">{stats.performance}%</span>
+                                <div className="w-20 bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className={`h-2 rounded-full ${stats.performance >= 80 ? 'bg-green-500' : stats.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                    style={{ width: `${stats.performance}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            {stats.hasPendingTasks && (
+                              <Button 
+                                onClick={() => handleImprimirComanda(employee.id)}
+                                className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-medium px-4 py-2 rounded-md"
+                              >
+                                <FileText className="mr-2 h-4 w-4" />
+                                Imprimir Comanda
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
