@@ -13,10 +13,12 @@ import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import TaskPage from "./pages/TaskPage";
 import TeamPage from "./pages/TeamPage";
+import ComandaPage from "./pages/ComandaPage";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import SupervisorDashboard from "./pages/SupervisorDashboard";
 import StoreListPage from "./pages/StoreListPage";
 import StoreDetailPage from "./pages/StoreDetailPage";
+import SupervisorStoreDetailPage from "./pages/SupervisorStoreDetailPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import TaskCreationPage from "./pages/TaskCreationPage";
 import DelegateTask from "./pages/DelegateTask";
@@ -46,6 +48,14 @@ const App = () => (
                   } 
                 />
                 <Route 
+                  path="/gerente/dashboard" 
+                  element={
+                    <ProtectedRoute roles={['gerente']}>
+                      <ManagerDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/gerente/tarefas" 
                   element={
                     <ProtectedRoute roles={['gerente']}>
@@ -58,6 +68,14 @@ const App = () => (
                   element={
                     <ProtectedRoute roles={['gerente']}>
                       <TeamPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/gerente/comanda" 
+                  element={
+                    <ProtectedRoute roles={['gerente']}>
+                      <ComandaPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -78,9 +96,25 @@ const App = () => (
                     </ProtectedRoute>
                   } 
                 />
+                <Route 
+                  path="/colaborador/tarefas" 
+                  element={
+                    <ProtectedRoute roles={['colaborador']}>
+                      <EmployeeDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 <Route 
                   path="/supervisor" 
+                  element={
+                    <ProtectedRoute roles={['supervisor']}>
+                      <SupervisorDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/supervisor/dashboard" 
                   element={
                     <ProtectedRoute roles={['supervisor']}>
                       <SupervisorDashboard />
@@ -103,9 +137,25 @@ const App = () => (
                     </ProtectedRoute>
                   } 
                 />
+                <Route 
+                  path="/supervisor/loja/:storeId/detalhes" 
+                  element={
+                    <ProtectedRoute roles={['supervisor']}>
+                      <SupervisorStoreDetailPage />
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 <Route 
                   path="/admin" 
+                  element={
+                    <ProtectedRoute roles={['matriz_adm']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/dashboard" 
                   element={
                     <ProtectedRoute roles={['matriz_adm']}>
                       <AdminDashboard />

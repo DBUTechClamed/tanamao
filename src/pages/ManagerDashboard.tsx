@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
-import PaginaComanda from '../components/PaginaComanda';
 import { Task, UserStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertCircle, Clock, TrendingUp, Printer } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock, TrendingUp, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockTasks, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
@@ -20,7 +19,6 @@ const ManagerDashboard: React.FC = () => {
   // Filter tasks for current store
   const storeTasks = mockTasks.filter(task => task.storeId === currentUser?.storeId);
   const [tasks, setTasks] = useState<Task[]>(storeTasks);
-  const [comandaColaborador, setComandaColaborador] = useState<string | null>(null);
   
   // Get team stats for current store
   const storeEmployees = mockUsers.filter(user => 
@@ -109,135 +107,118 @@ const ManagerDashboard: React.FC = () => {
     navigate(`/gerente/delegar/${taskId}`);
   };
 
-  const handleImprimirComanda = (colaboradorId: string) => {
-    setComandaColaborador(colaboradorId);
+  const handleImprimirComanda = () => {
+    navigate('/gerente/comanda');
   };
-
-  const handleCloseComanda = () => {
-    setComandaColaborador(null);
-  };
-
-  const colaboradorSelecionado = comandaColaborador ? mockUsers.find(user => user.id === comandaColaborador) : null;
 
   return (
     <Layout title="Dashboard">
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tarefas Pendentes</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.pendingTasks}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Em Progresso</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.inProgressTasks}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Concluídas</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.completedTasks}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.lateTasks}</div>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="space-y-6">
+        {/* Botão Imprimir Comanda */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <Button 
+            onClick={handleImprimirComanda}
+            className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Imprimir Comanda
+          </Button>
+        </div>
 
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4">Desempenho da Equipe</h3>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colaborador</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atribuídas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Iniciadas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atrasos</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {mockStats.userStats.map((stat) => (
-                  <tr key={stat.userId}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{stat.userName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.userRole}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksAssigned}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksStarted}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksCompleted}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksDelayed}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex items-center">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className={`h-2.5 rounded-full ${stat.performance >= 80 ? 'bg-green-500' : stat.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`} 
-                            style={{ width: `${stat.performance}%` }}
-                          ></div>
-                        </div>
-                        <span className="ml-2">{stat.performance}%</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {stat.hasPendingTasks ? (
-                        <Button
-                          onClick={() => handleImprimirComanda(stat.userId)}
-                          className="bg-[#118f55] hover:bg-[#0f7a47] text-white text-sm font-bold px-3 py-1 rounded-lg"
-                          size="sm"
-                        >
-                          <Printer className="w-4 h-4 mr-1" />
-                          Imprimir Comanda
-                        </Button>
-                      ) : (
-                        <span className="text-gray-400 text-sm">Sem tarefas pendentes</span>
-                      )}
-                    </td>
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Tarefas Pendentes</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.pendingTasks}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Em Progresso</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.inProgressTasks}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Concluídas</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.completedTasks}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.lateTasks}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-8">
+          <h3 className="text-lg font-medium mb-4">Desempenho da Equipe</h3>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colaborador</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atribuídas</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Iniciadas</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atrasos</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {mockStats.userStats.map((stat) => (
+                    <tr key={stat.userId}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{stat.userName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.userRole}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksAssigned}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksStarted}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksCompleted}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{stat.tasksDelayed}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex items-center">
+                          <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div 
+                              className={`h-2.5 rounded-full ${stat.performance >= 80 ? 'bg-[#118f55]' : stat.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`} 
+                              style={{ width: `${stat.performance}%` }}
+                            ></div>
+                          </div>
+                          <span className="ml-2">{stat.performance}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4">Tarefas do Dia</h3>
-        <TaskList 
-          tasks={tasks} 
-          onStart={handleStartTask}
-          onComplete={handleCompleteTask}
-          onDelegate={handleDelegateTask}
-        />
+        <div className="mt-8">
+          <h3 className="text-lg font-medium mb-4">Tarefas do Dia</h3>
+          <TaskList 
+            tasks={tasks} 
+            onStart={handleStartTask}
+            onComplete={handleCompleteTask}
+            onDelegate={handleDelegateTask}
+          />
+        </div>
       </div>
-
-      {/* Modal da Comanda */}
-      {comandaColaborador && colaboradorSelecionado && currentUser && (
-        <PaginaComanda
-          colaborador={colaboradorSelecionado}
-          gerente={currentUser}
-          tasks={tasks}
-          onClose={handleCloseComanda}
-        />
-      )}
     </Layout>
   );
 };
