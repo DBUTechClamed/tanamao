@@ -1,192 +1,188 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Users, CheckCircle, Clock, AlertCircle, FileText } from 'lucide-react';
-import { mockUsers, mockTasks } from '../data/mockData';
-import { useAuth } from '../context/AuthContext';
+import { UserStats } from '../types';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Mock data for the team members
+const mockTeamMembers: UserStats[] = [
+  {
+    userId: '1',
+    userName: 'João Silva',
+    userRole: 'Farmacêutico',
+    tasksAssigned: 12,
+    tasksStarted: 10,
+    tasksCompleted: 9,
+    tasksDelayed: 1,
+    performance: 85
+  },
+  {
+    userId: '2',
+    userName: 'Maria Oliveira',
+    userRole: 'Atendente',
+    tasksAssigned: 8,
+    tasksStarted: 8,
+    tasksCompleted: 7,
+    tasksDelayed: 0,
+    performance: 92
+  },
+  {
+    userId: '3',
+    userName: 'Pedro Santos',
+    userRole: 'Estoquista',
+    tasksAssigned: 10,
+    tasksStarted: 7,
+    tasksCompleted: 6,
+    tasksDelayed: 2,
+    performance: 70
+  },
+  {
+    userId: '4',
+    userName: 'Ana Souza',
+    userRole: 'Jovem Aprendiz',
+    tasksAssigned: 6,
+    tasksStarted: 5,
+    tasksCompleted: 3,
+    tasksDelayed: 1,
+    performance: 68
+  },
+  {
+    userId: '5',
+    userName: 'Carlos Ferreira',
+    userRole: 'Farmacêutico',
+    tasksAssigned: 15,
+    tasksStarted: 15,
+    tasksCompleted: 14,
+    tasksDelayed: 0,
+    performance: 95
+  },
+  {
+    userId: '6',
+    userName: 'Juliana Lima',
+    userRole: 'Estagiário',
+    tasksAssigned: 7,
+    tasksStarted: 7,
+    tasksCompleted: 5,
+    tasksDelayed: 1,
+    performance: 78
+  }
+];
 
 const TeamPage: React.FC = () => {
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
-  
-  // Filtrar colaboradores da loja atual
-  const storeEmployees = mockUsers.filter(user => 
-    user.role === 'colaborador' && user.storeId === currentUser?.storeId
-  );
-  
-  // Filtrar tarefas da loja atual
-  const storeTasks = mockTasks.filter(task => task.storeId === currentUser?.storeId);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('todos');
+  const [performanceFilter, setPerformanceFilter] = useState<string>('todos');
 
-  const getEmployeeStats = (employeeId: string) => {
-    const employeeTasks = storeTasks.filter(t => t.assignedTo === employeeId);
-    return {
-      total: employeeTasks.length,
-      completed: employeeTasks.filter(t => t.status === 'concluida').length,
-      inProgress: employeeTasks.filter(t => t.status === 'em_progresso').length,
-      pending: employeeTasks.filter(t => t.status === 'pendente').length,
-      delayed: employeeTasks.filter(t => t.status === 'atrasada').length,
-      performance: employeeTasks.length > 0 ? Math.round((employeeTasks.filter(t => t.status === 'concluida').length / employeeTasks.length) * 100) : 0,
-      hasPendingTasks: employeeTasks.filter(t => t.status === 'pendente' || t.status === 'em_progresso').length > 0
-    };
-  };
+  // Extract unique roles for filter
+  const roles = Array.from(new Set(mockTeamMembers.map(member => member.userRole)));
 
-  const handleImprimirComanda = (employeeId: string) => {
-    navigate(`/gerente/equipe/${employeeId}/comanda`);
-  };
+  // Filter team members based on search term and filters
+  const filteredTeamMembers = mockTeamMembers.filter(member => {
+    const matchesSearch = member.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (member.userRole && member.userRole.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesRole = roleFilter === 'todos' || member.userRole === roleFilter;
+    
+    const matchesPerformance = performanceFilter === 'todos' ||
+                              (performanceFilter === 'alta' && member.performance >= 80) ||
+                              (performanceFilter === 'media' && member.performance >= 60 && member.performance < 80) ||
+                              (performanceFilter === 'baixa' && member.performance < 60);
+    
+    return matchesSearch && matchesRole && matchesPerformance;
+  });
 
   return (
     <Layout title="Equipe">
-      <div className="space-y-6" style={{ backgroundColor: '#F5F5F5', minHeight: '100vh', padding: '24px' }}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold flex items-center">
-            <Users className="mr-2 h-6 w-6" />
-            Gestão da Equipe
-          </h2>
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Buscar membro da equipe..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Select
+            value={roleFilter}
+            onValueChange={setRoleFilter}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Cargo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Cargos</SelectItem>
+              {roles.map(role => (
+                <SelectItem key={role} value={role}>{role}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Cards de visão geral */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Colaboradores</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{storeEmployees.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tarefas Ativas</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {storeTasks.filter(t => t.status === 'pendente' || t.status === 'em_progresso').length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Concluídas Hoje</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {storeTasks.filter(t => t.status === 'concluida').length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {storeTasks.filter(t => t.status === 'atrasada').length}
-              </div>
-            </CardContent>
-          </Card>
+          <Select
+            value={performanceFilter}
+            onValueChange={setPerformanceFilter}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Performance" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todas as Performances</SelectItem>
+              <SelectItem value="alta">Alta (≥80%)</SelectItem>
+              <SelectItem value="media">Média (60-79%)</SelectItem>
+              <SelectItem value="baixa">Baixa (&lt;60%)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-
-        {/* Lista detalhada dos colaboradores */}
-        <Card style={{ backgroundColor: 'white' }}>
-          <CardHeader>
-            <CardTitle>Desempenho Individual</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {storeEmployees.map((employee) => {
-                const stats = getEmployeeStats(employee.id);
-                return (
-                  <div key={employee.id} className="p-4 border rounded-lg bg-white">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="font-semibold text-lg">{employee.name}</h3>
-                            <p className="text-gray-600">{employee.position || 'Colaborador'}</p>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="flex items-center space-x-2">
-                                <span className="text-2xl font-bold">{stats.performance}%</span>
-                                <div className="w-20 bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className={`h-2 rounded-full ${stats.performance >= 80 ? 'bg-green-500' : stats.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                                    style={{ width: `${stats.performance}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            {stats.hasPendingTasks && (
-                              <Button 
-                                onClick={() => handleImprimirComanda(employee.id)}
-                                style={{ 
-                                  backgroundColor: '#118f55', 
-                                  color: '#ffffff',
-                                  borderRadius: '6px',
-                                  fontWeight: '500'
-                                }}
-                                className="font-medium px-4 py-2 rounded-md"
-                              >
-                                <FileText className="mr-2 h-4 w-4" />
-                                Imprimir Comanda
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="font-medium text-gray-500">Total</div>
-                        <div className="text-xl font-bold">{stats.total}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-medium text-gray-500">Pendentes</div>
-                        <div className="text-xl font-bold text-gray-600">{stats.pending}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-medium text-gray-500">Em Progresso</div>
-                        <div className="text-xl font-bold text-blue-600">{stats.inProgress}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-medium text-gray-500">Concluídas</div>
-                        <div className="text-xl font-bold text-green-600">{stats.completed}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-medium text-gray-500">Atrasadas</div>
-                        <div className="text-xl font-bold text-red-600">{stats.delayed}</div>
-                      </div>
-                    </div>
-                    
-                    {stats.delayed > 0 && (
-                      <div className="mt-3">
-                        <Badge variant="destructive">
-                          Atenção: {stats.delayed} tarefa(s) atrasada(s)
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              
-              {storeEmployees.length === 0 && (
-                <div className="text-center text-gray-500 py-8">
-                  Nenhum colaborador encontrado nesta loja.
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Membros da Equipe</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarefas Atribuídas</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atrasadas</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTeamMembers.map((member) => (
+                  <tr key={member.userId}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{member.userName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{member.userRole}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{member.tasksAssigned}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{member.tasksCompleted}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{member.tasksDelayed}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex items-center">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className={`h-2.5 rounded-full ${member.performance >= 80 ? 'bg-green-500' : member.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`} 
+                            style={{ width: `${member.performance}%` }}
+                          ></div>
+                        </div>
+                        <span className="ml-2">{member.performance}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </Layout>
   );
 };

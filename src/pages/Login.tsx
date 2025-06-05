@@ -24,16 +24,16 @@ const Login: React.FC = () => {
     // Redirecionar para a página apropriada com base no perfil
     switch (role) {
       case 'gerente':
-        navigate('/gerente/dashboard');
+        navigate('/gerente');
         break;
       case 'colaborador':
-        navigate('/colaborador/tarefas');
+        navigate('/colaborador');
         break;
       case 'supervisor':
-        navigate('/supervisor/dashboard');
+        navigate('/supervisor');
         break;
       case 'matriz_adm':
-        navigate('/admin/dashboard');
+        navigate('/admin');
         break;
       default:
         navigate('/');
@@ -85,10 +85,7 @@ const Login: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="space-y-1">
             <label className="text-sm font-medium">Selecione seu perfil:</label>
-            <Select defaultValue="gerente" onValueChange={(value) => {
-              setRole(value as UserRole);
-              setUserId('');
-            }}>
+            <Select defaultValue="gerente" onValueChange={(value) => setRole(value as UserRole)}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o perfil" />
               </SelectTrigger>
@@ -103,7 +100,7 @@ const Login: React.FC = () => {
 
           <div className="space-y-1">
             <label className="text-sm font-medium">Selecione o usuário:</label>
-            <Select onValueChange={setUserId} value={userId}>
+            <Select onValueChange={setUserId}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o usuário" />
               </SelectTrigger>
