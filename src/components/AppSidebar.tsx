@@ -33,22 +33,22 @@ const AppSidebar = () => {
     switch (currentUser.role) {
       case 'gerente':
         return [
-          { title: "Dashboard", path: "/gerente", icon: Home },
+          { title: "Dashboard", path: "/gerente/dashboard", icon: Home },
           { title: "Tarefas", path: "/gerente/tarefas", icon: Clipboard },
           { title: "Equipe", path: "/gerente/equipe", icon: Users }
         ];
       case 'colaborador':
         return [
-          { title: "Minhas Tarefas", path: "/colaborador", icon: Clipboard }
+          { title: "Minhas Tarefas", path: "/colaborador/tarefas", icon: Clipboard }
         ];
       case 'supervisor':
         return [
-          { title: "Dashboard", path: "/supervisor", icon: Home },
+          { title: "Dashboard", path: "/supervisor/dashboard", icon: Home },
           { title: "Lojas", path: "/supervisor/lojas", icon: Building }
         ];
       case 'matriz_adm':
         return [
-          { title: "Dashboard", path: "/admin", icon: Home },
+          { title: "Dashboard", path: "/admin/dashboard", icon: Home },
           { title: "Cadastrar Tarefa", path: "/admin/cadastrar-tarefa", icon: PlusSquare }
         ];
       default:

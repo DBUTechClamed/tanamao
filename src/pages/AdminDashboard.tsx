@@ -87,7 +87,11 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="flex justify-end mt-6">
-        <Button onClick={() => navigate('/admin/cadastrar-tarefa')} className="mb-4">
+        <Button 
+          onClick={() => navigate('/admin/cadastrar-tarefa')} 
+          className="mb-4"
+          style={{ backgroundColor: '#118f55' }}
+        >
           Cadastrar Nova Tarefa
         </Button>
       </div>
@@ -109,7 +113,7 @@ const AdminDashboard: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="concluidas" stroke="#3B82F6" name="Concluídas" />
+                  <Line type="monotone" dataKey="concluidas" stroke="#118f55" name="Concluídas" />
                   <Line type="monotone" dataKey="atrasadas" stroke="#EF4444" name="Atrasadas" />
                 </LineChart>
               </ResponsiveContainer>
@@ -133,7 +137,7 @@ const AdminDashboard: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="quantidade" fill="#8884d8" name="Quantidade" />
+                  <Bar dataKey="quantidade" fill="#118f55" name="Quantidade" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -164,7 +168,7 @@ const AdminDashboard: React.FC = () => {
                         key={`cell-${index}`} 
                         fill={
                           index === 0 ? '#EF4444' : // Urgente e Importante
-                          index === 1 ? '#1E40AF' : // Importante
+                          index === 1 ? '#118f55' : // Importante
                           index === 2 ? '#FBBF24' : // Urgente
                           '#6B7280' // Normal
                         } 

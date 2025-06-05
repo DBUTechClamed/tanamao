@@ -22,7 +22,6 @@ import StoreDetailPage from "./pages/StoreDetailPage";
 import SupervisorStoreDetailPage from "./pages/SupervisorStoreDetailPage";
 import AssignTaskToStore from "./pages/AssignTaskToStore";
 import AdminDashboard from "./pages/AdminDashboard";
-import TaskCreationPage from "./pages/TaskCreationPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
 import DelegateTask from "./pages/DelegateTask";
 import NotFound from "./pages/NotFound";
@@ -42,6 +41,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Login />} />
                 
+                {/* Rotas do Gerente de Loja */}
                 <Route 
                   path="/gerente" 
                   element={
@@ -99,6 +99,7 @@ const App = () => (
                   } 
                 />
                 
+                {/* Rotas do Colaborador */}
                 <Route 
                   path="/colaborador" 
                   element={
@@ -116,6 +117,7 @@ const App = () => (
                   } 
                 />
                 
+                {/* Rotas do Supervisor Regional */}
                 <Route 
                   path="/supervisor" 
                   element={
@@ -165,6 +167,7 @@ const App = () => (
                   } 
                 />
                 
+                {/* Rotas do Administrador Matriz */}
                 <Route 
                   path="/admin" 
                   element={
@@ -186,6 +189,14 @@ const App = () => (
                   element={
                     <ProtectedRoute roles={['matriz_adm']}>
                       <CreateTaskPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/adm/dashboard" 
+                  element={
+                    <ProtectedRoute roles={['matriz_adm']}>
+                      <AdminDashboard />
                     </ProtectedRoute>
                   } 
                 />

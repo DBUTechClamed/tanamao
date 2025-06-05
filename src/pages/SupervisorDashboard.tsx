@@ -75,7 +75,6 @@ const SupervisorDashboard: React.FC = () => {
   const totalCompleted = mockStoreStats.reduce((sum, store) => sum + store.tasksCompleted, 0);
   const totalInProgress = mockStoreStats.reduce((sum, store) => sum + store.tasksInProgress, 0);
   const totalDelayed = mockStoreStats.reduce((sum, store) => sum + store.tasksDelayed, 0);
-  const averagePerformance = mockStoreStats.reduce((sum, store) => sum + store.performance, 0) / mockStoreStats.length;
 
   return (
     <Layout title="Dashboard Regional">
@@ -137,7 +136,7 @@ const SupervisorDashboard: React.FC = () => {
                   <Legend />
                   <Bar 
                     dataKey="performance" 
-                    fill="#3B82F6" 
+                    fill="#118f55" 
                     name="Performance (%)" 
                   />
                 </BarChart>
@@ -180,8 +179,12 @@ const SupervisorDashboard: React.FC = () => {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Desempenho das Lojas</h3>
-          <Button onClick={() => navigate('/supervisor/atribuir-tarefa')}>
-            Atribuir Tarefa à Loja
+          <Button 
+            onClick={() => navigate('/supervisor/lojas')}
+            style={{ backgroundColor: '#118f55' }}
+            className="text-white"
+          >
+            Ver Todas as Lojas
           </Button>
         </div>
         
@@ -221,8 +224,12 @@ const SupervisorDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/supervisor/loja/${store.storeId}`)}>
-                        Ver Detalhes
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => navigate(`/supervisor/lojas/${store.storeId}/atribuir-tarefa`)}
+                      >
+                        Atribuir Tarefa
                       </Button>
                     </td>
                   </tr>
