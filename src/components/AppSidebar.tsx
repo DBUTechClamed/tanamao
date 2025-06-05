@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Clipboard, Users, Building, ListChecks, Home, PlusSquare } from 'lucide-react';
+import { Clipboard, Users, Building, ListChecks, Home, PlusSquare, FileText } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +14,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
   useSidebar
 } from '@/components/ui/sidebar';
 
@@ -61,14 +60,14 @@ const AppSidebar = () => {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border">
+      <SidebarHeader className="border-b border-sidebar-border" style={{ backgroundColor: '#118f55' }}>
         <div className="flex items-center px-4 py-2">
-          <div className="mr-2 h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <ListChecks className="h-5 w-5 text-primary-foreground" />
+          <div className="mr-2 h-8 w-8 rounded-full bg-white flex items-center justify-center">
+            <ListChecks className="h-5 w-5 text-[#118f55]" />
           </div>
           <div className="flex flex-col">
-            <h3 className="font-semibold text-xl">TáNaMão</h3>
-            <p className="text-xs text-sidebar-foreground/70">
+            <h3 className="font-semibold text-xl text-white">TáNaMão</h3>
+            <p className="text-xs text-white/70">
               {currentUser?.role === 'gerente' && 'Gerente de Loja'}
               {currentUser?.role === 'colaborador' && 'Colaborador'}
               {currentUser?.role === 'supervisor' && 'Supervisor Regional'}
@@ -105,7 +104,7 @@ const AppSidebar = () => {
       <SidebarFooter className="border-t border-sidebar-border">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gray-200">
+            <div className="h-8 w-8 rounded-full bg-[#118f55] text-white flex items-center justify-center font-bold">
               {currentUser?.name?.charAt(0) || 'U'}
             </div>
             <div>

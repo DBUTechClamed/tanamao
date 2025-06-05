@@ -20,7 +20,7 @@ export type Task = {
   id: string;
   title: string;
   description: string;
-  observations?: string; // Novo campo para observações/instruções
+  observations?: string; // Campo de observações/instruções
   priority: TaskPriority; // Classificação na Matriz de Eisenhower
   frequency: TaskFrequency;
   storeId: string;

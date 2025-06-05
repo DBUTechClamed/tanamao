@@ -88,6 +88,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+        {task.observations && (
+          <p className="text-xs text-gray-500 italic mb-3 bg-gray-50 p-2 rounded">
+            <strong>Observações:</strong> {task.observations}
+          </p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1 text-gray-500" />
@@ -123,7 +128,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         {canComplete && onComplete && (
           <Button 
             onClick={() => onComplete(task.id)} 
-            className="fingerprint-button bg-green-600 hover:bg-green-700"
+            className="fingerprint-button bg-[#118f55] hover:bg-[#0f7a47]"
           >
             <span className="flex items-center">
               <CheckCircle className="mr-1 h-4 w-4" />
