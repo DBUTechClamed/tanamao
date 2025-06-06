@@ -47,27 +47,30 @@ const Login: React.FC = () => {
       case 'gerente':
         return (
           <>
-            <SelectItem value="1">João Silva</SelectItem>
+            <SelectItem value="gerente1">João Silva</SelectItem>
           </>
         );
       case 'colaborador':
         return (
           <>
-            <SelectItem value="2">Maria Oliveira (Farmacêutico)</SelectItem>
-            <SelectItem value="3">Pedro Santos (Atendente)</SelectItem>
-            <SelectItem value="4">Ana Costa (Estoquista)</SelectItem>
+            <SelectItem value="colab1">Maria Oliveira (Farmacêutico)</SelectItem>
+            <SelectItem value="colab2">Pedro Santos (Atendente)</SelectItem>
+            <SelectItem value="colab3">Ana Costa (Estoquista)</SelectItem>
+            <SelectItem value="colab4">Roberto Alves (Operador de Caixa)</SelectItem>
+            <SelectItem value="colab5">Júlia Pereira (Estagiário)</SelectItem>
+            <SelectItem value="colab6">Marcos Rodrigues (Vigilante)</SelectItem>
           </>
         );
       case 'supervisor':
         return (
           <>
-            <SelectItem value="5">Carlos Souza</SelectItem>
+            <SelectItem value="supervisor1">Carlos Souza</SelectItem>
           </>
         );
       case 'matriz_adm':
         return (
           <>
-            <SelectItem value="6">Fernanda Lima</SelectItem>
+            <SelectItem value="admin1">Fernanda Lima</SelectItem>
           </>
         );
       default:

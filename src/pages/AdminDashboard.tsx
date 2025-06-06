@@ -22,7 +22,7 @@ const tasksByFrequencyData = [
   { name: 'Diárias', quantidade: 45 },
   { name: 'Semanais', quantidade: 32 },
   { name: 'Mensais', quantidade: 18 },
-  { name: 'Bimestrais', quantidade: 10 },
+  { name: 'Quinzenais', quantidade: 10 },
   { name: 'Trimestrais', quantidade: 8 },
   { name: 'Semestrais', quantidade: 6 },
   { name: 'Anuais', quantidade: 4 },
@@ -144,7 +144,7 @@ const AdminDashboard: React.FC = () => {
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Distribuição de Tarefas por Matriz de Eisenhower</CardTitle>
+            <CardTitle>Distribuição de Tarefas por Prioridade</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">

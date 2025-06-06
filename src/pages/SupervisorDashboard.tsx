@@ -11,8 +11,9 @@ import { useNavigate } from 'react-router-dom';
 // Dados de exemplo para as estatísticas das lojas
 const mockStoreStats: StoreStats[] = [
   { 
-    storeId: '1', 
+    storeId: 'loja1', 
     storeName: 'Farmácia Centro', 
+    storeCity: 'São Paulo',
     tasksTotal: 45, 
     tasksCompleted: 32, 
     tasksInProgress: 8, 
@@ -21,8 +22,9 @@ const mockStoreStats: StoreStats[] = [
     performance: 71 
   },
   { 
-    storeId: '2', 
+    storeId: 'loja2', 
     storeName: 'Farmácia Shopping', 
+    storeCity: 'Guarulhos',
     tasksTotal: 38, 
     tasksCompleted: 30, 
     tasksInProgress: 5, 
@@ -31,24 +33,15 @@ const mockStoreStats: StoreStats[] = [
     performance: 79 
   },
   { 
-    storeId: '3', 
+    storeId: 'loja3', 
     storeName: 'Farmácia Norte', 
+    storeCity: 'São Bernardo',
     tasksTotal: 42, 
     tasksCompleted: 25, 
     tasksInProgress: 10, 
     tasksPending: 4, 
     tasksDelayed: 3, 
     performance: 60 
-  },
-  { 
-    storeId: '4', 
-    storeName: 'Farmácia Sul', 
-    tasksTotal: 36, 
-    tasksCompleted: 32, 
-    tasksInProgress: 2, 
-    tasksPending: 2, 
-    tasksDelayed: 0, 
-    performance: 89 
   }
 ];
 
@@ -75,7 +68,6 @@ const SupervisorDashboard: React.FC = () => {
   const totalCompleted = mockStoreStats.reduce((sum, store) => sum + store.tasksCompleted, 0);
   const totalInProgress = mockStoreStats.reduce((sum, store) => sum + store.tasksInProgress, 0);
   const totalDelayed = mockStoreStats.reduce((sum, store) => sum + store.tasksDelayed, 0);
-  const averagePerformance = mockStoreStats.reduce((sum, store) => sum + store.performance, 0) / mockStoreStats.length;
 
   return (
     <Layout title="Dashboard Regional">
@@ -180,8 +172,8 @@ const SupervisorDashboard: React.FC = () => {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Desempenho das Lojas</h3>
-          <Button onClick={() => navigate('/supervisor/atribuir-tarefa')}>
-            Atribuir Tarefa à Loja
+          <Button onClick={() => navigate('/supervisor/lojas')}>
+            Ver Todas as Lojas
           </Button>
         </div>
         
@@ -191,6 +183,7 @@ const SupervisorDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loja</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concluídas</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Em Progresso</th>
@@ -204,6 +197,7 @@ const SupervisorDashboard: React.FC = () => {
                 {mockStoreStats.map((store) => (
                   <tr key={store.storeId}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{store.storeName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{store.storeCity}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{store.tasksTotal}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{store.tasksCompleted}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{store.tasksInProgress}</td>
