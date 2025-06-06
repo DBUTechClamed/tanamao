@@ -1,14 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, CheckCircle, Clock, AlertCircle, Printer } from 'lucide-react';
 import { mockUsers, mockTasks } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
+import PaginaComanda from '../components/PaginaComanda';
 
 const TeamPage: React.FC = () => {
   const { currentUser } = useAuth();
+  const [colaboradorSelecionado, setColaboradorSelecionado] = useState<string | null>(null);
   
   // Filtrar colaboradores da loja atual
   const storeEmployees = mockUsers.filter(user => 
@@ -29,6 +32,18 @@ const TeamPage: React.FC = () => {
       performance: employeeTasks.length > 0 ? Math.round((employeeTasks.filter(t => t.status === 'concluida').length / employeeTasks.length) * 100) : 0
     };
   };
+
+  const handleImprimirComanda = (colaboradorId: string) => {
+    setColaboradorSelecionado(colaboradorId);
+  };
+
+  const fecharComanda = () => {
+    setColaboradorSelecionado(null);
+  };
+
+  const colaboradorParaComanda = colaboradorSelecionado 
+    ? storeEmployees.find(emp => emp.id === colaboradorSelecionado)
+    : null;
 
   return (
     <Layout title="Equipe">
@@ -102,14 +117,25 @@ const TeamPage: React.FC = () => {
                         <h3 className="font-semibold text-lg">{employee.name}</h3>
                         <p className="text-gray-600">{employee.position || 'Colaborador'}</p>
                       </div>
-                      <div className="text-right">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-2xl font-bold">{stats.performance}%</span>
-                          <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className={`h-2 rounded-full ${stats.performance >= 80 ? 'bg-green-500' : stats.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                              style={{ width: `${stats.performance}%` }}
-                            ></div>
+                      <div className="flex items-center space-x-3">
+                        <Button
+                          onClick={() => handleImprimirComanda(employee.id)}
+                          variant="outline"
+                          size="sm"
+                          className="text-[#118f55] border-[#118f55] hover:bg-[#118f55] hover:text-white"
+                        >
+                          <Printer className="h-4 w-4 mr-2" />
+                          Imprimir Comanda
+                        </Button>
+                        <div className="text-right">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-bold">{stats.performance}%</span>
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full ${stats.performance >= 80 ? 'bg-green-500' : stats.performance >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                style={{ width: `${stats.performance}%` }}
+                              ></div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -157,6 +183,16 @@ const TeamPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Modal da Comanda */}
+        {colaboradorParaComanda && currentUser && (
+          <PaginaComanda
+            colaborador={colaboradorParaComanda}
+            gerente={currentUser}
+            tasks={storeTasks}
+            onClose={fecharComanda}
+          />
+        )}
       </div>
     </Layout>
   );
