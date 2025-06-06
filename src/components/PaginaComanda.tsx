@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { X, Printer } from 'lucide-react';
 import { Task, UserProfile } from '../types';
@@ -25,7 +24,44 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
   ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   const handlePrint = () => {
-    window.print();
+    // Hide everything except the comanda content during print
+    const body = document.body;
+    const comandaContent = document.querySelector('.comanda-print-content');
+    
+    if (comandaContent) {
+      // Clone the comanda content
+      const printContent = comandaContent.cloneNode(true) as HTMLElement;
+      
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Comanda - ${colaborador.name}</title>
+              <style>
+                body { 
+                  margin: 0; 
+                  padding: 8px; 
+                  font-family: 'Courier New', monospace; 
+                  font-size: 10px; 
+                  max-width: 300px; 
+                }
+                .comanda-print-content {
+                  width: 100%;
+                }
+              </style>
+            </head>
+            <body>
+              ${printContent.outerHTML}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+      }
+    }
   };
 
   const getPrioridadeText = (priority: string) => {
@@ -55,7 +91,7 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-lg comanda-container">
+      <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-lg">
         {/* Botões do modal */}
         <div className="flex justify-end p-2 no-print">
           <button
@@ -75,7 +111,7 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
         </div>
 
         {/* Conteúdo da comanda */}
-        <div className="p-4" style={{ fontFamily: 'Courier New, monospace', fontSize: '10px', maxWidth: '300px', margin: '0 auto' }}>
+        <div className="comanda-print-content p-4" style={{ fontFamily: 'Courier New, monospace', fontSize: '10px', maxWidth: '300px', margin: '0 auto' }}>
           {/* Cabeçalho */}
           <div className="text-center mb-4">
             <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>
@@ -135,30 +171,6 @@ const PaginaComanda: React.FC<PaginaComandaProps> = ({ colaborador, gerente, tas
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media print {
-          body, html { 
-            margin: 0; 
-            padding: 0; 
-          }
-          .btn, .no-print { 
-            display: none !important; 
-          }
-          .comanda-container { 
-            width: 300px; 
-            font-size: 10px;
-            box-shadow: none;
-            border: none;
-          }
-          .fixed {
-            position: static;
-          }
-          .bg-black {
-            background: white;
-          }
-        }
-      `}</style>
     </div>
   );
 };

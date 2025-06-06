@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -120,9 +119,8 @@ const TeamPage: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <Button
                           onClick={() => handleImprimirComanda(employee.id)}
-                          variant="outline"
                           size="sm"
-                          className="text-[#118f55] border-[#118f55] hover:bg-[#118f55] hover:text-white"
+                          className="bg-[#118f55] hover:bg-[#0f7a49] text-white"
                         >
                           <Printer className="h-4 w-4 mr-2" />
                           Imprimir Comanda
