@@ -49,14 +49,6 @@ const App: React.FC = () => (
                   } 
                 />
                 <Route 
-                  path="/gerente/dashboard" 
-                  element={
-                    <ProtectedRoute roles={['gerente']}>
-                      <ManagerDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
                   path="/gerente/tarefas" 
                   element={
                     <ProtectedRoute roles={['gerente']}>
@@ -108,14 +100,6 @@ const App: React.FC = () => (
                 
                 <Route 
                   path="/supervisor" 
-                  element={
-                    <ProtectedRoute roles={['supervisor']}>
-                      <SupervisorDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/supervisor/dashboard" 
                   element={
                     <ProtectedRoute roles={['supervisor']}>
                       <SupervisorDashboard />

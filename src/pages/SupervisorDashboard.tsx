@@ -1,12 +1,14 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ManagerTaskCreation from '../components/ManagerTaskCreation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { StoreStats } from '../types';
-import { CheckCircle, Clock, AlertCircle, Building } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Building, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { mockUsers } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 
 // Dados de exemplo para as estatísticas das lojas
 const mockStoreStats: StoreStats[] = [
@@ -62,6 +64,13 @@ const COLORS = ['#10B981', '#3B82F6', '#6B7280', '#EF4444'];
 
 const SupervisorDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [showTaskCreation, setShowTaskCreation] = useState(false);
+
+  // Get all employees from all stores for task delegation
+  const allEmployees = mockUsers.filter(user => 
+    user.role === 'colaborador' || user.role === 'gerente'
+  );
 
   // Calcular estatísticas gerais
   const totalTasks = mockStoreStats.reduce((sum, store) => sum + store.tasksTotal, 0);
@@ -69,8 +78,28 @@ const SupervisorDashboard: React.FC = () => {
   const totalInProgress = mockStoreStats.reduce((sum, store) => sum + store.tasksInProgress, 0);
   const totalDelayed = mockStoreStats.reduce((sum, store) => sum + store.tasksDelayed, 0);
 
+  const handleOpenTaskCreation = () => {
+    setShowTaskCreation(true);
+  };
+
+  const handleCloseTaskCreation = () => {
+    setShowTaskCreation(false);
+  };
+
   return (
     <Layout title="Dashboard Regional">
+      {/* Botão superior */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Dashboard Regional</h1>
+        <Button 
+          onClick={handleOpenTaskCreation}
+          className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Cadastrar Nova Tarefa
+        </Button>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -226,6 +255,15 @@ const SupervisorDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de criação de tarefas */}
+      {showTaskCreation && currentUser && (
+        <ManagerTaskCreation
+          onClose={handleCloseTaskCreation}
+          storeEmployees={allEmployees}
+          currentUser={currentUser}
+        />
+      )}
     </Layout>
   );
 };
