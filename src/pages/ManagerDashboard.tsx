@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
+import ManagerTaskCreation from '../components/ManagerTaskCreation';
 import { Task, UserStats } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertCircle, Clock, TrendingUp, FileText } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock, TrendingUp, FileText, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockTasks, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +15,7 @@ const ManagerDashboard: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [showTaskCreation, setShowTaskCreation] = useState(false);
   
   // Filter tasks for current store
   const storeTasks = mockTasks.filter(task => task.storeId === currentUser?.storeId);
@@ -111,19 +112,36 @@ const ManagerDashboard: React.FC = () => {
     navigate('/gerente/comanda');
   };
 
+  const handleOpenTaskCreation = () => {
+    setShowTaskCreation(true);
+  };
+
+  const handleCloseTaskCreation = () => {
+    setShowTaskCreation(false);
+  };
+
   return (
     <Layout title="Dashboard">
       <div className="space-y-6">
-        {/* Botão Imprimir Comanda */}
+        {/* Botões superiores */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <Button 
-            onClick={handleImprimirComanda}
-            className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            Imprimir Comanda
-          </Button>
+          <div className="flex space-x-3">
+            <Button 
+              onClick={handleOpenTaskCreation}
+              className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Cadastrar Nova Tarefa
+            </Button>
+            <Button 
+              onClick={handleImprimirComanda}
+              className="bg-[#118f55] hover:bg-[#0f7a47] text-white font-bold"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Imprimir Comanda
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
@@ -218,6 +236,15 @@ const ManagerDashboard: React.FC = () => {
             onDelegate={handleDelegateTask}
           />
         </div>
+
+        {/* Modal de criação de tarefas */}
+        {showTaskCreation && currentUser && (
+          <ManagerTaskCreation
+            onClose={handleCloseTaskCreation}
+            storeEmployees={storeEmployees}
+            currentUser={currentUser}
+          />
+        )}
       </div>
     </Layout>
   );
