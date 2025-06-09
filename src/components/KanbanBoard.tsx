@@ -4,9 +4,10 @@ import { Task, UserProfile } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, User, AlertCircle, Plus } from 'lucide-react';
+import { Clock, User, AlertCircle, Plus, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ManagerTaskCreation from './ManagerTaskCreation';
+import TaskEditModal from './TaskEditModal';
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -23,6 +24,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 }) => {
   const { toast } = useToast();
   const [showTaskCreation, setShowTaskCreation] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -64,6 +67,27 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('text/plain', taskId);
+  };
+
+  const handleCardClick = (task: Task, e: React.MouseEvent) => {
+    // Prevent opening modal when clicking on edit button
+    if ((e.target as HTMLElement).closest('.edit-button')) {
+      return;
+    }
+    setEditingTask(task);
+    setShowEditModal(true);
+  };
+
+  const handleEditClick = (task: Task, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTask(task);
+    setShowEditModal(true);
+  };
+
+  const handleSaveTask = (taskId: string, updates: Partial<Task>) => {
+    onUpdateTask(taskId, updates);
+    setShowEditModal(false);
+    setEditingTask(null);
   };
 
   const columns = [
@@ -119,18 +143,29 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   key={task.id}
                   draggable
                   onDragStart={(e) => handleDragStart(e, task.id)}
-                  className="cursor-move hover:shadow-md transition-shadow bg-white"
+                  onClick={(e) => handleCardClick(task, e)}
+                  className="cursor-pointer hover:shadow-md transition-shadow bg-white relative group"
                 >
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
-                      <CardTitle className="text-sm font-medium line-clamp-2">
+                      <CardTitle className="text-sm font-medium line-clamp-2 flex-1 pr-2">
                         {task.title}
                       </CardTitle>
-                      <Badge 
-                        className={`${getPriorityColor(task.priority)} text-white text-xs`}
-                      >
-                        {getPriorityText(task.priority)}
-                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Badge 
+                          className={`${getPriorityColor(task.priority)} text-white text-xs`}
+                        >
+                          {getPriorityText(task.priority)}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="edit-button opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                          onClick={(e) => handleEditClick(task, e)}
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
@@ -171,6 +206,17 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           currentUser={currentUser}
         />
       )}
+
+      <TaskEditModal
+        task={editingTask}
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingTask(null);
+        }}
+        onSave={handleSaveTask}
+        storeEmployees={storeEmployees}
+      />
     </div>
   );
 };
