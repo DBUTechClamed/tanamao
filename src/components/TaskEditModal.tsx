@@ -194,7 +194,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
               <Label htmlFor="priority">Prioridade</Label>
               <Select
                 value={formData.priority}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value as TaskPriority }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -212,7 +212,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
               <Label htmlFor="frequency">Frequência</Label>
               <Select
                 value={formData.frequency}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value }))}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value as TaskFrequency }))}
               >
                 <SelectTrigger>
                   <SelectValue />
