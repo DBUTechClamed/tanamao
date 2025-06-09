@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Clipboard, Users, Building, ListChecks, Home, PlusSquare, FileText } from 'lucide-react';
+import { Clipboard, Users, Building, ListChecks, Home, PlusSquare, FileText, Kanban } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +33,7 @@ const AppSidebar = () => {
       case 'gerente':
         return [
           { title: "Dashboard", path: "/gerente", icon: Home },
+          { title: "Kanban", path: "/gerente/kanban", icon: Kanban },
           { title: "Tarefas", path: "/gerente/tarefas", icon: Clipboard },
           { title: "Equipe", path: "/gerente/equipe", icon: Users }
         ];

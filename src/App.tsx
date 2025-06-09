@@ -12,6 +12,7 @@ import AppSidebar from "./components/AppSidebar";
 
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
+import KanbanPage from "./pages/KanbanPage";
 import TaskPage from "./pages/TaskPage";
 import TeamPage from "./pages/TeamPage";
 import ComandaPage from "./pages/ComandaPage";
@@ -45,6 +46,14 @@ const App: React.FC = () => (
                   element={
                     <ProtectedRoute roles={['gerente']}>
                       <ManagerDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/gerente/kanban" 
+                  element={
+                    <ProtectedRoute roles={['gerente']}>
+                      <KanbanPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -133,14 +142,6 @@ const App: React.FC = () => (
                 
                 <Route 
                   path="/admin" 
-                  element={
-                    <ProtectedRoute roles={['matriz_adm']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/admin/dashboard" 
                   element={
                     <ProtectedRoute roles={['matriz_adm']}>
                       <AdminDashboard />
