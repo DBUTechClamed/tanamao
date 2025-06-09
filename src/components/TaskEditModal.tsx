@@ -41,7 +41,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
     description: task?.description || '',
     observations: task?.observations || '',
     dueDate: task?.dueDate || '',
-    assignedTo: task?.assignedTo || '',
+    assignedTo: task?.assignedTo || 'unassigned',
     priority: task?.priority || 'normal',
     frequency: task?.frequency || 'pontual'
   });
@@ -53,7 +53,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
         description: task.description,
         observations: task.observations || '',
         dueDate: task.dueDate,
-        assignedTo: task.assignedTo || '',
+        assignedTo: task.assignedTo || 'unassigned',
         priority: task.priority,
         frequency: task.frequency
       });
@@ -77,7 +77,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
       description: formData.description.trim(),
       observations: formData.observations.trim(),
       dueDate: formData.dueDate,
-      assignedTo: formData.assignedTo || undefined,
+      assignedTo: formData.assignedTo === 'unassigned' ? undefined : formData.assignedTo,
       priority: formData.priority as TaskPriority,
       frequency: formData.frequency as TaskFrequency
     });
@@ -178,7 +178,7 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({
                   <SelectValue placeholder="Selecione um colaborador" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Não atribuído</SelectItem>
+                  <SelectItem value="unassigned">Não atribuído</SelectItem>
                   {storeEmployees.map((employee) => (
                     <SelectItem key={employee.id} value={employee.id}>
                       {employee.name}
