@@ -1,12 +1,12 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { UserProfile, UserRole } from '../types';
-import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
+import { mockUsers } from '../data/mockData';
 
 interface AuthContextProps {
   currentUser: UserProfile | null;
-  login: (email: string, password: string) => Promise<{ error: any }>;
-  logout: () => Promise<{ error: any }>;
+  login: (role: UserRole, userId: string) => void;
+  logout: () => void;
   signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
   isAuthenticated: boolean;
   loading: boolean;
@@ -17,32 +17,37 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { 
-    userProfile: currentUser, 
-    signIn, 
-    signOut, 
-    signUp, 
-    isAuthenticated, 
-    loading 
-  } = useSupabaseAuth();
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [loading] = useState(false);
 
-  const login = async (email: string, password: string) => {
-    return await signIn(email, password);
+  const login = (role: UserRole, userId: string) => {
+    const user = mockUsers.find(u => u.id === userId && u.role === role);
+    if (user) {
+      setCurrentUser(user);
+    }
   };
 
-  const logout = async () => {
-    return await signOut();
+  const logout = () => {
+    setCurrentUser(null);
   };
 
-  // These would need to be implemented with a separate hook for user management
+  const signUp = async (email: string, password: string, name: string) => {
+    // Mock implementation
+    return { error: null };
+  };
+
   const getUserById = (id: string) => {
-    // This would be implemented with a users hook
-    return undefined;
+    return mockUsers.find(user => user.id === id);
   };
 
   const getUsersByRole = (role: UserRole, storeId?: string) => {
-    // This would be implemented with a users hook
-    return [];
+    return mockUsers.filter(user => {
+      const roleMatch = user.role === role;
+      if (storeId) {
+        return roleMatch && user.storeId === storeId;
+      }
+      return roleMatch;
+    });
   };
 
   return (
@@ -51,7 +56,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       login, 
       logout, 
       signUp, 
-      isAuthenticated, 
+      isAuthenticated: !!currentUser, 
       loading, 
       getUserById, 
       getUsersByRole 

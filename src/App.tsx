@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
-import AuthPage from "./pages/AuthPage";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import SupervisorDashboard from "./pages/SupervisorDashboard";
@@ -26,34 +25,26 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
-  }
+  const { isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/login" replace />;
   }
   
   return <>{children}</>;
 };
 
 const AppRoutes = () => {
-  const { currentUser, isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
-  }
+  const { currentUser, isAuthenticated } = useAuth();
 
-  // Redirect authenticated users away from auth page
-  if (isAuthenticated && window.location.pathname === '/auth') {
+  // Redirect authenticated users away from login page
+  if (isAuthenticated && window.location.pathname === '/login') {
     return <Navigate to="/" replace />;
   }
 
   return (
     <Routes>
-      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/" element={
         <ProtectedRoute>
           {currentUser?.role === 'gerente' ? <ManagerDashboard /> :
