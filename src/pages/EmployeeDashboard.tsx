@@ -2,50 +2,37 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
-import { Task } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useTasks } from '../hooks/useTasks';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Circle, CheckCircle, Clock } from 'lucide-react';
-import { mockTasks } from '../data/mockData';
 
 const EmployeeDashboard: React.FC = () => {
   const { currentUser } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
+  const { tasks, updateTask } = useTasks(currentUser?.storeId);
   
-  // Filtra as tarefas que pertencem ao colaborador atual
+  // Filtrar tarefas do colaborador atual
+  const userTasks = tasks.filter(
+    task => (task.assignedTo === currentUser?.id || task.owner === currentUser?.id)
+  );
+  
   useEffect(() => {
-    if (currentUser) {
-      const filteredTasks = mockTasks.filter(
-        task => (task.assignedTo === currentUser.id || task.owner === currentUser.id) && 
-                task.storeId === currentUser.storeId
-      );
-      setTasks(filteredTasks);
-      
-      // Exibir notificação de boas-vindas com as tarefas pendentes
-      if (filteredTasks.length > 0) {
-        toast({
-          title: `Olá, ${currentUser.name}!`,
-          description: `Você tem ${filteredTasks.filter(t => t.status === 'pendente').length} tarefas pendentes hoje.`,
-        });
-      }
+    if (currentUser && userTasks.length > 0) {
+      toast({
+        title: `Olá, ${currentUser.name}!`,
+        description: `Você tem ${userTasks.filter(t => t.status === 'pendente').length} tarefas pendentes hoje.`,
+      });
     }
-  }, [currentUser, toast]);
+  }, [currentUser, userTasks.length, toast]);
   
-  const handleStartTask = (taskId: string) => {
-    setTasks(currentTasks => 
-      currentTasks.map(task => 
-        task.id === taskId 
-          ? { 
-              ...task, 
-              status: 'em_progresso', 
-              startedBy: currentUser?.id, 
-              startedAt: new Date().toISOString() 
-            } 
-          : task
-      )
-    );
+  const handleStartTask = async (taskId: string) => {
+    await updateTask(taskId, {
+      status: 'em_progresso',
+      startedBy: currentUser?.id,
+      startedAt: new Date().toISOString()
+    });
     
     toast({
       title: "Tarefa iniciada",
@@ -54,20 +41,13 @@ const EmployeeDashboard: React.FC = () => {
   };
   
   const handleCompleteTask = (taskId: string) => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyPress = async (e: KeyboardEvent) => {
       if (e.code === 'Space') {
-        setTasks(currentTasks => 
-          currentTasks.map(task => 
-            task.id === taskId 
-              ? { 
-                  ...task, 
-                  status: 'concluida', 
-                  completedBy: currentUser?.id, 
-                  completedAt: new Date().toISOString() 
-                } 
-              : task
-          )
-        );
+        await updateTask(taskId, {
+          status: 'concluida',
+          completedBy: currentUser?.id,
+          completedAt: new Date().toISOString()
+        });
         
         toast({
           title: "Tarefa concluída",
@@ -89,9 +69,9 @@ const EmployeeDashboard: React.FC = () => {
   };
 
   // Cálculo de estatísticas
-  const pendingTasks = tasks.filter(t => t.status === 'pendente').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'em_progresso').length;
-  const completedTasks = tasks.filter(t => t.status === 'concluida').length;
+  const pendingTasks = userTasks.filter(t => t.status === 'pendente').length;
+  const inProgressTasks = userTasks.filter(t => t.status === 'em_progresso').length;
+  const completedTasks = userTasks.filter(t => t.status === 'concluida').length;
 
   return (
     <Layout title="Minhas Tarefas">
@@ -127,9 +107,9 @@ const EmployeeDashboard: React.FC = () => {
 
       <div className="mt-8">
         <h3 className="text-lg font-medium mb-4">Minhas Tarefas</h3>
-        {tasks.length > 0 ? (
+        {userTasks.length > 0 ? (
           <TaskList 
-            tasks={tasks} 
+            tasks={userTasks} 
             onStart={handleStartTask}
             onComplete={handleCompleteTask}
           />

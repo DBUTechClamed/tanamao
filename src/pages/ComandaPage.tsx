@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { mockTasks, mockStores } from '../data/mockData';
+import { useTasks } from '../hooks/useTasks';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -11,14 +11,13 @@ import { useNavigate } from 'react-router-dom';
 const ComandaPage: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const { tasks } = useTasks(currentUser?.storeId);
   
-  const loja = mockStores.find(store => store.id === currentUser?.storeId);
   const dataEmissao = format(new Date(), 'dd/MM/yyyy', { locale: ptBR });
   
   // Filtrar tarefas pendentes da loja
-  const tarefasPendentes = mockTasks.filter(task => 
-    task.storeId === currentUser?.storeId && 
-    (task.status === 'pendente' || task.status === 'em_progresso')
+  const tarefasPendentes = tasks.filter(task => 
+    task.status === 'pendente' || task.status === 'em_progresso'
   ).sort((a, b) => {
     const priorityOrder = {
       'urgent_important': 0,
@@ -62,6 +61,10 @@ const ComandaPage: React.FC = () => {
     }
   };
 
+  // Simular nome da loja - isso deveria vir do banco de dados
+  const lojaNome = "Farmácia Central";
+  const lojaCidade = "São Paulo";
+
   return (
     <div className="min-h-screen bg-white">
       {/* Botões de ação - escondidos na impressão */}
@@ -86,7 +89,7 @@ const ComandaPage: React.FC = () => {
             </div>
             <div style={{ borderTop: '1px solid #000', margin: '8px 0' }}></div>
             <div style={{ marginBottom: '4px' }}>
-              Loja: {loja?.name || 'N/A'} - {loja?.city || 'N/A'}
+              Loja: {lojaNome} - {lojaCidade}
             </div>
             <div style={{ marginBottom: '8px' }}>
               Data: {dataEmissao} Colaborador: {currentUser?.name || 'N/A'}

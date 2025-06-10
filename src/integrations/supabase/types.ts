@@ -9,7 +9,201 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      regions: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      stores: {
+        Row: {
+          city: string
+          created_at: string | null
+          id: string
+          name: string
+          region_id: string | null
+          state: string | null
+        }
+        Insert: {
+          city: string
+          created_at?: string | null
+          id?: string
+          name: string
+          region_id?: string | null
+          state?: string | null
+        }
+        Update: {
+          city?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          region_id?: string | null
+          state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stores_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_delegates: {
+        Row: {
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_delegates_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string | null
+          delegable: boolean | null
+          description: string
+          due_date: string
+          extendable: boolean | null
+          frequency: string
+          id: string
+          observations: string | null
+          owner_id: string | null
+          priority: string
+          started_at: string | null
+          started_by: string | null
+          status: string
+          store_id: string | null
+          title: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string | null
+          delegable?: boolean | null
+          description: string
+          due_date: string
+          extendable?: boolean | null
+          frequency: string
+          id?: string
+          observations?: string | null
+          owner_id?: string | null
+          priority: string
+          started_at?: string | null
+          started_by?: string | null
+          status?: string
+          store_id?: string | null
+          title: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string | null
+          delegable?: boolean | null
+          description?: string
+          due_date?: string
+          extendable?: boolean | null
+          frequency?: string
+          id?: string
+          observations?: string | null
+          owner_id?: string | null
+          priority?: string
+          started_at?: string | null
+          started_by?: string | null
+          status?: string
+          store_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          position: string | null
+          region_id: string | null
+          role: string
+          store_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          name: string
+          position?: string | null
+          region_id?: string | null
+          role: string
+          store_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          position?: string | null
+          region_id?: string | null
+          role?: string
+          store_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

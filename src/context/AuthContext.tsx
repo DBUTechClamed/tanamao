@@ -1,68 +1,61 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { UserProfile, UserRole } from '../types';
-import { mockUsers } from '../data/mockData';
+import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 
 interface AuthContextProps {
   currentUser: UserProfile | null;
-  login: (role: UserRole, userId: string) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ error: any }>;
+  logout: () => Promise<{ error: any }>;
+  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
   isAuthenticated: boolean;
+  loading: boolean;
   getUserById: (id: string) => UserProfile | undefined;
   getUsersByRole: (role: UserRole, storeId?: string) => UserProfile[];
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { 
+    userProfile: currentUser, 
+    signIn, 
+    signOut, 
+    signUp, 
+    isAuthenticated, 
+    loading 
+  } = useSupabaseAuth();
 
-  // Verificar se há um usuário no localStorage quando o componente monta
-  useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Erro ao carregar usuário do localStorage', error);
-        localStorage.removeItem('currentUser');
-      }
-    }
-  }, []);
-
-  const login = (role: UserRole, userId: string) => {
-    const user = mockUsers.find(u => u.id === userId && u.role === role);
-    if (user) {
-      setCurrentUser(user);
-      setIsAuthenticated(true);
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    } else {
-      console.error('Usuário não encontrado');
-    }
+  const login = async (email: string, password: string) => {
+    return await signIn(email, password);
   };
 
-  const logout = () => {
-    setCurrentUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('currentUser');
+  const logout = async () => {
+    return await signOut();
   };
 
+  // These would need to be implemented with a separate hook for user management
   const getUserById = (id: string) => {
-    return mockUsers.find(u => u.id === id);
+    // This would be implemented with a users hook
+    return undefined;
   };
 
   const getUsersByRole = (role: UserRole, storeId?: string) => {
-    if (storeId) {
-      return mockUsers.filter(u => u.role === role && u.storeId === storeId);
-    }
-    return mockUsers.filter(u => u.role === role);
+    // This would be implemented with a users hook
+    return [];
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, isAuthenticated, getUserById, getUsersByRole }}>
+    <AuthContext.Provider value={{ 
+      currentUser, 
+      login, 
+      logout, 
+      signUp, 
+      isAuthenticated, 
+      loading, 
+      getUserById, 
+      getUsersByRole 
+    }}>
       {children}
     </AuthContext.Provider>
   );
